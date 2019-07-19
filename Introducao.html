@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Esta é a introdução sobre SQL Server.">
+        <title>Introdução - SQL Server</title>
+    </head>
+    
+    <body>
+        <h1> Introdução - SQL Server </h1>
+        <ul>
+            <li><strong> O que é?</strong></li>
+                <p> O SQL Server é um SGBD (<strong>Sistema Gerenciador de Banco de Dados</strong>) que auxilia na manipulação de todo um banco de dados, de forma possível a construir um banco do zero e monitorá-lo, modifica-lo e administra-lo de acordo com que novos dados sejam registrados.</p>
+                <p> Este SGBD foi criado e é constantemebte atualizado pela empresa <strong>Microsoft</strong>, a qual disponibiliza este sistema de forma gratuita para seus usuários. Assim como, o SQL Server é um dos SGBD's <strong>mais utilizados</strong> pelas empresas, sendo em muitas das vezes, o <i>core</i> das instituições que o carregam.</p>
+                <p> O SQL Server, como o nome já indica, utiliza de <strong>instruções SQL</strong> para sua manipulação, linguagem essa usada no gerenciamento de bancos de dados. Porém, por existirem inúmeros outros SGBD's, o SQL Server, além da linguagem SQL, possui também sua linguagem própria, chamada de <strong>T-SQL</strong> (<i>Transact SQL</i>), o qual usufrui de comandos próprios que só são lidos pelo SQL Server. Além disso, o SQL Server é funcional para a manipulação de <strong>bancos relacionais</strong>, que são bancos de dados constituídos de tabelas, colunas e tuplas.</p>
+            <hr>
+            <li><strong> Como instalar?</strong></li>
+                <p> Para utilizar do SQL Server, é preciso que o usuário instale , primeiramente, alguns softwares em sua máquina, sendo eles essênciais para o bom uso do SGBD. Os programas necessários são:</p>
+                <ol>
+                    <li><strong> SSMS </strong></li>
+                        <p> O SSMS ou <i><strong>SQL Server Management Studio</strong></i>, é um ambiente integrado para gerenciar qualquer infraestrutura de SQL do SQL Server</p>
+                        <p> O mesmo fornece ferramentas de configuração, monitoramento e administração do SQL Server e bancos de dados, podendo também possuir elementos de construção, consultas e scripts dos dados. Além disso, o SSMS é inteiramente <strong>gratuíto</strong>.</p>
+                    <br>
+                    <li><strong> SQL Server </strong></li>
+                        <p> Nada mais é do que a integração do SQL Server em um sistema gerenciador de dados, sendo então utilizado pelo SSMS, neste caso.</p>
+                </ol>
+            <hr>
+            <li><strong> Conectando-se a uma instância </strong></li>
+                <p> Após a instalação do SSMS e do SQL Server serem realizadas em sua máquina, é preciso executar o software SSMS para a inicialização. Após isso, o programa será aberto e uma pequena janela será exibida, solicitando registros de <i><strong>Server name</strong></i> e <i><strong>Authentication</strong></i>. Esta janela é a <strong>conexão direta com uma instância</strong>.</p>
+                <ul>
+                    <li><strong> Server Name </strong></li>
+                        <p>Este é o campo de <strong>Nome do servidor</strong>, sendo preciso inserir o <i><strong>hostname</strong></i> de sua máquina ou o nome da <strong>instância</strong> do SQL Server. Caso esteja usando o SQL Server de forma local, basta inserir o <i>hostname</i> de sua máquina, que o <i>software</i> irá interagir. Porém, se estiver utilizando-o em uma empresa, trabalho ou algo do tipo, é usado o nome da instância criada para tal funcionalidade. </p>
+                    <br>
+                    <li><strong>Authentication</strong></li>
+                        <p>Este é o campo de <strong>Autenticação</strong>, sendo como padrão, utilizada a opção "<strong><i>Windows Authentication</i></strong>" (Também é possível utilizar a opção <strong><i>SQL Server Authentication</i></strong>. Porém, ao ser usada, deverá inserir um nome de <strong>usuário</strong> e uma <strong>senha</strong>).</p>
+                </ul>
+            
+                <p> Feito isso, o processo de conexão com a instância estará concluído, onde um pequeno <strong>menu</strong> será exibido ao lado esquerdo do programa, este é chamado de <strong><i>Object Explorer</i></strong>, sendo basicamente um menu de atalho para conexões com instâncias, databases e suas tabelas, assim como a visualização dos mesmos. Portanto, o segundo passo, será a conexão (ou criação) com uma database.</p>
+            <hr>
+            <li><strong> Conectando-se a uma database</strong></li>
+                <p> Para a conexão com uma database, 2 passos podem ser executados (através do <i>object xplorer</i> ou por T-SQL). A conexão com a database, irá dar ao usuário acesso aos dados diretos das tabelas presentes na mesma, assim como aos índices e outras funções.</p>
+                <ul>
+                    <li><strong>Através do Object Explorer</strong></li>
+                        <p> Os passos a serem seguidos para a criação de uma database pelo <i>object explorer</i> é bem simples, bastando clicar com o botão direito em <i>databases</i> e selecionar a opção <i><strong>New Database</strong></i>, onde será aberta uma janela de configuração, pedindo para inserir um <strong>nome</strong> para a database. Depois basta apertar em OK e pronto, sua primeira database estará criada.</p>
+                        <p> Para se conectar a uma database já criada, o processo é semelhante, bastando clicar com o botão direito na database desejada e escolher a opção <strong><i>New Query</i></strong> e pronto, será aberta uma aba de inserção de Query's na database conectada.</p>
+                    
+                    <li><strong>Através do T-SQL</strong></li>
+                        <p> Também é possível criar uma database aravés de comandos T-SQL, de forma a serem dados através da aba de uma query. Ou seja, primeiramente, será preciso abrir uma aba de inserção de query na instância logada bastando apertar no botão "<strong><i>New Query</i></strong>" ou, basta apertar as teclas <strong>Ctrl+N</strong> que a aba será aberta.</p>
+                        <p> Com a aba aberta, insira o comando "<strong><i>CREATE DATABASE</i></strong>" seguido do nome que deseja da-la. desta forma, sua primeira database estará criada.</p>
+                        <p> Para se conectar a database criada, será preciso dar o mesmo comando de abertura de aba de query na database criada (<strong>Ctrl+N</strong>).</p>
+                </ul>
+            <p><strong>OBS: Após criar a database, dê um atualizada na instância... Para fazer isso, basta apertar com o botão direito no nome da instância e clicar em <strong><i>Refresh</i></strong>.</strong></p>
+            <hr>
+            <p><strong> Feito os passos acima, seu banco de dados estará criado, bastando agora dar instruções SQL e T-SQL para administra-lo.</strong></p>
+            
+        </ul>
+    </body>
+</html>
