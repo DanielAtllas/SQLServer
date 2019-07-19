@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <title>Arquitetura - SQL Server</title>
+        <meta charset="utf-8">
+        <meta name="description" content="Este é um site de estudos sobre SQL Server e sua arquitetura.">
+    </head>
+    <body>
+        <h1>Arquitetura - SQL Server</h1>
+        <p> Nesta página, será explicada a arquitetura e os componentes presentes em um BD SQL Server, como as entidades envolvidas (<strong><i>Instance, Database, Schemas e Objects</i></strong>) e as finalidades de cada entidade.</p>
+        <ul>
+            <li><strong> Instance </strong></li>
+                <p> Instâncias são <strong> instalações de um serviço de banco de dados SQL Server</strong>, sendo possível instalar <strong> inúmeras instâncias em um servidor</strong>. Cada instância é completamente <strong>indpendente</strong> das outras em termos de segurança, dados gerenciados e de todos os outros aspectos, ou seja, duas instâncias diferentes que residem em um mesmo computador, não possuem nada em comum e são entendidas como se estivem presentes em servidores separados (Obviamente ambas <strong>compartilham os mesmos recursos do servidor, como CPU, memória e disco</strong>).</p>
+                <p> É possível que o usuário, deseje criar uma <strong>instância padrão</strong> e as demais como <strong> instâncias nomeadas</strong> (<strong>Será definido se uma instância é nomeada ou padrão, no momento de sua criação, não sendo possível alterar após isso</strong>).</p>
+                <ul>
+                    <li><strong>Instance Padrão </strong></li>
+                        <p> Para conectar-se/criar uma instância padrão, será preciso o nome (<strong><i>hostname</i></strong>) ou endereço de IP da máquina usada. Portanto, será preciso identificar o <i>hostname</i> de sua máquina ou sua IP para defini-lo como instância no uso do SQL Server.</p>
+                    
+                    <li><strong> Instance Nomeada </strong></li>
+                    <p> Para conectar-se/ criar uma instância nomeada, será preciso especificar o nome (<strong><i>hostname</i></strong>) ou endereço de IP da máquina usada, seguido por uma <strong>barra invertida</strong> (\), seguida pelo <strong>nome desejado</strong> para a instância.
+                </ul>
+                <p> Por exemplo, imagine que foram criadas 2 instâncias de SQL Server em um computador chamado de <strong>Server1</strong>, sendo que uma das intâncias foi criada como padrão e a outra nomeada, chamada de <strong>Inst1</strong>. Para conectar-se a instância padrão, será preciso especificar o <i>Server1</i> como o nome do servidor e para se conectar a instância nomeada, será preciso especificar <strong>Server1\Inst1</strong>. </p>
+            <hr>
+            <li><strong>Databases</strong></li>
+                <p> Imagine um database como um <strong>contêiner de objetos</strong>, como tabelas, views, stored procedures e etc. Cada instância do SQL Server pode conter inúmeras databases. Por padrão, o próprio <strong>SQL Server já possui 5 databases instaladas em seu servidor</strong>, as quais armazenam dados do sistema e possuem suas finalidades. Porém, saiba que o usuário deve criar suas próprias tabelas, e não inserir dados nas de default.</p>
+                <p> As tabelas de default, criadas pelo SQL Server, são as seguintes:</p>
+                <ul>
+                    <li><strong>Master</strong></li>
+                        <p> Esta database <strong>armazena informações</strong> de metadados de toda a instância, consiguração do servidor, informações sobre os demais bancos criados da instância e informações de inicialização.</p>
+                    <li><strong>Resource</strong></li>
+                        <p> Foi adicionado a partir do SQL Server 2005 e <strong>armazena todos os objetos do sistema</strong>. Como ao consultar objetos de sistema em um determinado BD, eles residem na database Resource.</p>
+                    <li><strong>Model</strong></li>
+                        <p> É usado como <strong>modelo para novos bancos de dados</strong>, onde cada banco criado, terá inicialmente, uma cópia do banco de dados model.</p>
+                    <li><strong>TempDB</strong></li>
+                        <p> É onde o SQL Server <strong>armazena dados temporários</strong>, como tabelas, espaço de classificação, informações sobre a versão da linha e etc. Por exemplo, o SQL Server permite a criação de tabelas temporárias, as quais são excluídas após o fechamento da sessão da instância; Esses dados da tamebla temporária, ficam armazenados no TempDB.</p>
+                    <li><strong>MsDB</strong></li>
+                        <p> Local onde um serviço chamado SQL Server Agent armazena seus dados. Estando <strong>encarregado de automaçãoes</strong>, como alertas, JOBS e etc. Além de armazenar informações sobre recursos próprios, como Database Mail e Service Broker.</p>
+                </ul>
+                <p> Portanto, é possível criar inúmeros databases em uma instância, o qual irá armazenar dados e objetos. Em termos de segurança, para estar apto a se conectar a uma instância no SQL Server, o DBA tem de criar um <i><strong>login</strong></i> para o usuário, podendo este, estar ligado a credênciais do Windows (sendo chamado de Authentication Windows). Com um login autenticado do Windows, não será preciso fornecer informações de login e senha para a conexão. Além disso, o login pode ser também independente das credênciais do Windows, o chamado Authentication SQL Server, onde ao se conectar, será preciso um login e senha.</p>
+                <p><strong>OBS: O DBA precisa mapear o login de um usuário, concedendo-o as permissões nencessáias.</strong></p>
+                <p> Uma database é coposta por dados e de arquivos de log de transações, onde ao ser criado, poderá ser definido as propriedades para caa arquivo, como o nome, local, tamanho e etc (Os arquivos de dados armazenam dados de objetos e os arquivos de log armazenam informações que o SQL Server precisa para manter as transações).</p>
+            <hr>
+            <li><strong>Schemas e Objects</strong></li>
+                <p> Ao ser dito anteriormente que uma database é um contêiner de objetos, é uma forma simplificada de relatar, já que uma database contêm <i><strong>Schemas</strong></i> e os <i>schemas</i> possuem <strong><i>Objects</i></strong>. Portanto, imagine um <i>Schema</i> como um <strong>contêiner de objetos</strong>, como tabelas, views, procedures e etc.</p>
+                <p> É possível controlar permissões no âmbito de schema, podendo conceder a um usuário as permissões <strong><i>SELECT</i></strong> em um schema, permitindo-o consuktar dados de todos os objetos referentes a tal schema. O schema também é um <i><strong>namespace</strong></i>, usado como prefixo para o nome de um objeto. Onde por exemplo, digamos que existe uma tabela <strong>Names</strong> e um schema <strong>Emp</strong>, logo, se a tabela estiver inserida neste schema, seu nome será <strong>Emp.Names</strong>.</p>
+                <p> Portando, Schemas são <strong>contêiners de objetos</strong> e objetos são <strong>tabelas, views, procedures e etc.</strong></p>
+            <hr>
+            <li><strong>Criando Tabelas</strong></li>
+                <p> Para a criação de uma tabela, é altamente recomendado a inserção do comando <i><strong>USE</strong></i> seguido pelo nome da database, para assegurar que os objetos serão criados na database desejada. Após isso, basta dar um comando <strong><i>CREATE TABLE</i></strong> seguido pelo <strong>nome da tabela</strong>, a abertura de <strong>parênteses</strong> e as <strong>colunas</strong> que deseja inserir na tabela, dentro dos parênteses e fecha-lo depois.</p>
+                <p> Para <strong>cada coluna</strong>, deverá ser especificado o seu <strong>nome</strong>, <strong>tipo</strong> e condição de <strong>nulidade</strong>(Onde colunas NULL podem receber valores vazios e NOT NULL, não).</p>
+                <p> Os <strong>tipos</strong> possíveis de dados no SQL Server, são vários, entre eles: <strong><i>INT</i></strong> (valores inteiros), <strong><i>VARCHAR</i></strong> (valores de STRING), <strong><i>DATE</i></strong> (Valores de datas), <strong><i>MONEY</i></strong> (valores de dinheiro) e <strong><i>FLOAT</i></strong> (valores numéricos flutuantes).</p>
+                <p> Por exemplo:</p>
+                <pre>
+                    <strong>USE</strong> TesteDB
+                    <strong>GO</strong>
+                    <strong>CREATE TABLE</strong> Emp.Funcionario<strong>(</strong>
+                        ID_Func     <strong>INT</strong>             <strong>NOT NULL</strong>,
+                        Nome        <strong>VARCHAR(50) </strong>    <strong>NOT NULL</strong>,
+                        DataNasc    <strong>DATE</strong>            <strong>NOT NULL</strong>,
+                        Salario     <strong>MONEY</strong>           <strong>NOT NULL</strong>,
+                        Altura      <strong>FLOAT</strong>           <strong>NULL</strong>
+                    <strong>)</strong>
+                    <strong>GO</strong></pre>
+            <hr>
+            <li><strong>Constraints</strong></li>
+                <p>Constraints são <strong>integridades dos dados</strong>, as quais servem para definir <strong>características únicas dos dados</strong> de uma coluna. Os tipos de constraintes presentes no SQL Server são:</p>
+                <ul>
+                    <li><strong>Primary Key</strong></li>
+                        <p>Ou <strong>chave primária</strong> impôe exclusividade de linhas empedindo valores nulos, onde cada conjunto será exclusivamente de valores da coluna para não serem repetidos, além de serem uma característica identificadora. As primary keys podem ser definidas durante ou após a criação de uma tabela. Por exemplo: </p>
+                        <pre>
+                        <strong>ALTER TABLE</strong> Emp.Funcionario
+                            <strong>ADD CONSTRAINT</strong> PK_Funcionario
+                            <strong>PRIMARY KEY(</strong>ID_Func<strong>)</strong>
+                        <strong>GO</strong>    
+                        </pre>
+                        <p> Para impor a exclusividade da primary key, o SQL Server criará um índice exclusivo em segundo plano, sendo um mecanismo físico usado pelo SQL Server para impor as exclusividades, sendo também usados par aacelarar consultas, evitando examinar toda a tabela de forma desnecessária.</p>
+                    <li><strong>Unique</strong></li>
+                        <p> Esta constraint impõe exclusivamente a exclusividade de linhas. Ao contrário das primary keys, várias unique's constraints podem ser definidadas em uma única tabela. Por exemplo:</p>
+                        <pre>
+                        <strong>ALTER TABLE</strong> Emp.Funcionario
+                            <strong>ADD CONSTRAINT</strong> UNQ_Funcionario_CPF
+                            <strong>UNIQUE(</strong>CPF_Func<strong>)</strong>
+                        <strong>GO</strong>    
+                        </pre>
+                        <p>Assim como acontece com a primary key, o SQL Server criará um índice exclusivo em segundo plano como mecanismo físico.</p>
+                    <li><strong>Foreign Key</strong></li>
+                        <p> Ou <strong>chave estrangeira</strong> impõe uma integridade referêncial, sendo definida em um conjunto de colunas em que é chamada de tabela de <strong>referência</strong> e aponta para um conjunto de colunas de atributos chaves de outra tabela, sendo chamada de <strong>tabela referênciada</strong>. Tendo então como finalidade, rstringir o domínio de valores permitidos nas colunas de foreign key àqueles existentes na coluna referênciada. Por exemplo:</p>
+                        <pre>
+                        <strong>ALTER TABLE</strong> Emp.Gerente
+                            <strong>ADD CONSTRAINT</strong> FK_Funcionario_Gerente
+                            <strong>FOREIGN KEY(</strong>ID_Gerente<strong>)</strong>
+                            <strong>REFERENCES</strong> Funcionario(ID_Func)
+                        <strong>GO</strong>    
+                        </pre>
+                         <p> Dessa forma, seguindo o exemplo acima, será criada um foreign key que irá referenciar as tabelas <strong>Funcionário</strong> e <strong>Gerente</strong> pelas suas ID. Portanto, será criada um regra chamada de <strong>no action</strong>, a qual tentativas de excluir ou atualizar linhas da tabela referenciada, serão rejeitadas se as linhas relacionadas existerem  na tabela de referência. </p>
+                    <li><strong>Check Constraints</strong></li>
+                        <p>Ou <strong>constraint de verificação</strong> permite definir uma regra que os dados da coluna devem atentder para que possam ser inseridos. Por exemplo:</p>
+                        <pre>
+                        <strong>ALTER TABLE</strong> Emp.Gerente
+                            <strong>ADD CONSTRAINT</strong> CHK_Funcionario
+                            <strong>CHECK(</strong>Salario>0<strong>)</strong>
+                        <strong>GO</strong>    
+                        </pre>
+                        <p> Dessa forma, os dados de salário da tabela Funcionario deveram respeitar a regra de serem positivos (maiores que 0)</p>
+                    <li><strong> Default</strong></li>
+                        <p> Ou <strong> Constraint padrão</strong> realizará uma auto inserção de valores em uma coluna sempre que algum novo dado for registrado. Por exmplo:</p>
+                        <pre>
+                        <strong>ALTER TABLE</strong> Emp.Gerente
+                            <strong>ADD CONSTRAINT</strong> DFT_Funcionario
+                            <strong>DEAFULT(</strong>Codigo_Func<strong>)</strong>
+                        <strong>GO</strong>    
+                        </pre>
+                        <p> Sendo então incrementado valores de códigos aleatórios únicos sempre que um novo registro for identificado.</p>
+                </ul>
+        </ul>
+    </body>
+</html>
