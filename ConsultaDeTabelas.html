@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <title>Consulta de tabelas - SQL Server</title>
+        <meta charset="utf-8">
+        <meta name="description" content="Site referente a consultas de tabelas em SQL Server.">
+    </head>
+    <body>
+        <h1>Consultas de tabelas - SQL Server</h1>
+        <p> Por se tratar de um banco de dados que armazena registros em tabelas, obviamente será possível manipular esses dados, de forma a consulta-los para identificar algo em sua existência. Para isso, comandos chamados de <strong>QUERY's</strong> são dados no SSMS para tal execução. Portanto, será descrito o processamento lógico de consulta, normalmente feitas através do comando <strong><i>SELECT</i></strong>.</p>
+        <ul>
+            <li><strong>Elementos da instrução SELECT</strong></li>
+                <p> A finalidade de uma instrução <i>SELECT</i> é <strong>consultar tabelas, aplicar alguma manipulação lógica e retornar resultados</strong>. Sendo as principais cláusulas de uma instrução <i>SELECT</i> as seguintes: </p>
+                <pre>
+            <strong>SELECT</strong> <i>columns</i>
+            <strong>FROM</strong> <i>Tables</i>
+            <strong>WHERE</strong> <i>Obeção</i>
+            <strong>GROUP BY</strong> <i>Group</i>
+            <strong>ORDER BY</strong> <i>Order</i>
+                </pre>
+                <p><strong>OBS: É aconselhável utilizar do comando <i>USE</i> para definir em qual <i>database</i> o comando será executado.</strong></p>
+                <p> Antes de entrar nos detalhes de cada fase da instrução <i>SELECT</i>, observe a ordem em que as cláusulas são processadas, pois no SQL, estão presentes diferentes regras de ordem das linguagens de programações. Embora a cláusula <i>SELECT</i> apareça primeiro, ela é processada logicamente por última. A ordem de processamento lógico de cada cláusula é a seguinte: </p>
+                <ol>
+                    <li><strong>FROM</strong></li>
+                    <br>
+                    <li><strong>WHERE</strong></li>
+                    <br>
+                    <li><strong>GROUP BY</strong></li>
+                    <br>
+                    <li><strong>SELECT</strong></li>
+                    <br>
+                    <li><strong>ORDER BY</strong></li>
+                </ol>
+                <p> Portanto, de forma literal, o que acontece é o seguinte:</p>
+                <ol>
+                    <li> Consulta das linhas da tabela.</li>
+                    <br>
+                    <li> Filtração somente do que será consultado.</li>
+                    <br>
+                    <li> Agrupamento das colunas por um identificador.</li>
+                    <br>
+                    <li> Seleção de cada coluna que será exibida.</li>
+                    <br>
+                    <li> Ordenação/classificação por linha de cada egistro da tabela.</li>
+                </ol>
+            <hr>
+            <li><strong>A cláusula FROM</strong></li>
+                <p> Sendo a primeira consulta que é processada logicamente, será possível especificar o nome das tabelas que serão consultadas e os operadores de tabela que operam na mesma. O comando de <i>FROM</i> é dado por:</p>
+                <pre><strong>FROM</strong> <i>table</i></pre>
+                <p><strong>OBS: É recomendado informar o nome do <i>SCHEMA</i> que a tabela reside.</strong></p>
+                <p> Para exibir as linhas de uma tabela sem nenhuma manipulção, tudo o que precisa ser feito é a junção do comando <strong><i>SELECT</i></strong> com a cláusula <strong><i>FROM</i></strong>, como o exemplo a seguir:</p>
+                <pre>
+        <strong>SELECT</strong> Nome, Empresa
+        <strong>FROM</strong> Emp.Funcionarios
+                </pre>
+            <hr>
+            <li><strong>A cláusula WHERE</strong></li>
+                <p> Nesta fase, é especificado um <strong>precdicado ou filtro</strong> que irá especificar quais registros serão retornados pela fase <strong><i>FROM</i></strong>, Onde soemnte para os registros que o sistema julgar como <strong><i>TRUE</i></strong> serão retornados. Este comando é dado por:</p>
+                <pre>
+        <strong>FROM</strong> <i>Tables</i>
+        <strong>WHERE</strong> <i>Filtro</i>
+                </pre>
+                <p> Sendo então preciso informar quais filtros serão feitos após a indicação do comando. Um exemplo de uso desta cláusula é o seguinte, onde serão exibidos apenas alunos que possuem <strong>idade maior que 18 anos</strong>:</p>
+                <pre>
+        <strong>SELECT</strong> Nome, Idade       
+        <strong>FROM</strong> Esc.Alunos
+        <strong>WHERE</strong> Idade>18    
+                </pre>
+                <p> O uso deste comando, é extremamente essêncial para qualquer DBA, de forma que a filtração da consulta reduz consideravelmenteo processamento da Query, retornando as consultas de forma mais rápida e eficaz, além de ser apenas aquilo que o consultor realmente deseja verificar.</p>
+            <hr>
+            <li><strong>A cláusula GROUP BY</strong></li>
+                <p> Esta fase permite agrupar as linhas retornadas pela fase de processamento lógico de consulta de grupos. Os grupos são determinados pelos elementos que você especifica na fase do <strong><i>GROUP BY</i></strong>. Sendo dado pelo comando:</p>
+                <pre>
+        <strong>FROM</strong> <i>Tables</i>
+        <strong>WHERE</strong> <i>Filtro</i>
+        <strong>GROUP BY</strong> <i>Group</i>
+                </pre>
+                <p> A presença desta fase, é exigida quando a consultar contiver algum comando de contagem (<strong><i>COUNT, SUM, AVG, MIN ou MAX</i></strong>). De forma que todas as outras colunas deverão estar presentes no <i>GROUP BY</i>. Como por exemplo:</p>
+                <pre>
+        <strong>SELECT</strong>
+            Nome,
+            <strong>COUNT</strong>(Provas)
+            <strong>SUM</strong>(Notas)
+        <strong>FROM</strong> Esc.Alunos
+        <strong>GROUP BY</strong> Nome
+                </pre>
+            <li><strong>A cláusula SELECT</strong></li>
+                <p> A fase <i>SELECT</i> é o local onde será especificado as colunas que serão retornados como resultado da consulta. Para isso, o comando <i>SELECT</i> é dado seguido pelo nome das colunas que se deseja consultar. Além disso, as manipulações de dados são inseridas na nesta fase, como a exibição de contagem de dadps, formatação, transformação de dados e etc.</p>
+                <p> Também é possível a criação de uma coluna temporárias, de forma que ela será exibida somente durante a exibição da query, não sendo inserida na tabela em sí, dado pelo uso de <strong>duas aspas</strong>. Assim como a renomeação de alguma coluna, sendo dada pelo comando <i><strong>AS</strong></i>. Estes comandos de coluna temporária e renome são chamados de <strong>ALIAS</strong>. Por exemplo:</p>
+                <pre>
+        <strong>SELECT</strong>
+            <strong>COUNT</strong>(*) <strong>AS</strong> Quantidade,
+            '' <strong>AS</strong> Column2
+        <strong>FROM</strong> <i>Table</i>    
+                </pre>
+                <p> Lembre-se que a cláusula <i>SELECT</i> é processada após as fases <i>FROM, WHERE e GROUP BY</i>, isso significa que os aliases não existem para cláusulas que são processadas antes do <i>SELECT</i>. Imagine que uma coluna foi renomeada com o nome de <strong>Quantidade</strong>, dessa forma, especificar o nome <strong>Quantidade</strong> em uma fase <i><strong>WHERE</strong></i> por exemplo, <strong>não será reconhecido</strong>.</p>
+                <p> O SQL fornece os meio para garantir a exclusividade no resultado de uma instrução <i>SELECT</i>, de forma que uma linha não apareça repetida. Para isso, é dado o comando <strong><i>DISTINCT</i></strong> após o comando <i>SELECT</i>, de forma a retirar tuplas duplicadas.</p>
+                <pre>
+        <strong>SELECT DISTINCT</strong>
+            <strong>COUNT</strong>(*) <strong>AS</strong> Quantidade,
+            '' <strong>AS</strong> Column2
+        <strong>FROM</strong> <i>Table</i>    
+                </pre>
+            <li><storng>A cláusula ORDER BY</storng></li>
+                <p> Esta permite classificar as linhas de exibição de forma ordenada, sendo esta ordenação de forma crescente/A-Z ou decrescente/Z-A. Sendo preciso informar uma coluna para qual a ordenação será feita. Saiba que é possível inserir mais de uma coluna na instrução <i>ORDER BY</i>, juntando assim os valores das colunas e fazendo a ordenação. Para que a ordenação seja feita de forma decrescente/Z-A é preciso do comando <strong><i>DESC</i></strong> junto ao <i>ORDER BY</i>. Por exemplo:</p>
+                <pre>
+        <strong>SELECT</strong> Nome
+        <strong>FROM</strong> Esc.Alunos
+        <strong>ORDER BY</strong> Idade <strong>DESC</strong>
+                </pre>
+            <hr>
+            <li><strong>A opção TOP</strong></li>
+                <p> É um recurso funcional específico da linguagem T-SQL, permitindo lmitar o número de tuplas a serem exibidas em uma consulta, sendo preciso apenas dar o comando <strong>TOP()</strong> após o a instrução <strong>SELECT</strong>, como a seguinte:</p>
+                <pre>
+        <strong>SELECT TOP(5)</strong> Nome, Idade       
+        <strong>FROM</strong> Esc.Alunos
+                </pre>
+                <p> Exibindo apenas as primeiras 5 tuplas da consulta feita. Além disso, é possível usar a função <i>TOP</i> com a palavra-chave <strong>PERCENT</strong>, exigindo que o SQL Server calcule o número de linhas a ser retornado com base em uma porcentagem do número de linhas qualificada. Ou seja, é retirada a porcentagem exigida do total de linhas a ser exibido.</p>
+            <hr>
+            <li><strong>Funções de classificação</strong></li>
+                <p> A partir de um <i>SELECT</i> é possível dar comandos de exibições de classificações, como <strong>ROW_NUMBER, RANK, DENSE_RANK e NTILE</strong>, dadas pelo comando:</p>
+                <pre>
+        <strong>SELECT</strong> <i>colunms</i>,
+        <strong>ROW_NUMBER() OVER(ORDER BY</strong><i>column</i>),
+        <strong>RANK() OVER(ORDER BY</strong><i>column</i>),
+        <strong>DENSE_RANK() OVER(ORDER BY</strong><i>column</i>),
+        <strong>NTILE(10) OVER(ORDER BY</strong><i>column</i>)
+        <strong>FROM</strong> <i>Table</i>
+                </pre>
+                <p> Onde a função <strong>ROW_NUMBER</strong> atribui número inteiros sequênciais de incremento às linhas no conjunto de resultados de uma consulta, ou seja, funcionando como um contador númerico da quantidade das linhas.</p>
+                <p> Já a função <strong>DENSE_RANK</strong> irá ordenar as linhas de a cordo a uma posição dependendo de seus valores. Imagine que em uma coluna estão presentes os números <strong>25, 45 e 30</strong>, logo com a função <i>RANK</i>, será gerada uma coluna indicando a posição de cada valor, neste caso como <strong> 1, 3 e 2</strong>, como se indicasse do valor menor para o maior. </p>
+                <p> A função <strong>RANK</strong> por outro lado, segue o mesmo sentido da dita anteriormente, com a diferença que se houver um empate de valores, ela continuará a contagem. Por exemplo:</p>
+                <pre>
+        <strong>VALORES</strong>            <strong>RANK</strong>       <strong>DENSE_RANK</strong>
+        12                  1              1
+        18                  2              2
+        23                  3              3
+        28                  4              4
+        30                  5              5
+        33                  6              6
+        36                  7              7
+        36                  7              7
+        40                  9              8
+        45                  10             9
+                </pre>
+            <hr>
+            <li><strong>Predicados e Operadores</strong></li>
+                <p>Estes são operadores presentes em funções de filtração dos dados e entre eles podemos listar os predicados <strong>IN, BETWEEN  e o LIKE</strong>, onde o predicado <strong>IN</strong> faz com que a filtração esteja dentro dos campos listados pelo usuário, ou seja, o DBA irá listar alguns valores em um conjunto e a exibição da consulta deverá estar dentro deste conjunto criado. Por exemplo:</p>
+                <pre>
+        <strong>SELECT</strong> Nome, Idade, CPF
+        <strong>FROM</strong> Esc.Alunos
+        <strong>WHERE</strong> Idade <strong>IN</strong>(10,25,18)
+                </pre>
+                <p> Dessa forma, apenas os alunos que tiverem idade de 10, 25 ou 18 anos irão ser listados na consulta feita.</p>
+                <p> Também é possível usar do predicado <strong>BETWEEN</strong> onde será criado um range (intervalo) de valores, sendo que qualquer valor entre esse range, poderá ser exibido na consulta. Como no exemplo seguinte, onde apenas valores entre <strong>10 e 20</strong> serão exibidos</p>
+                <pre>
+        <strong>SELECT</strong> Nome, Idade, CPF
+        <strong>FROM</strong> Esc.Alunos
+        <strong>WHERE</strong> Idade <strong>BETWEEN</strong>10 <strong>AND</strong>20
+                </pre>
+            <p> Ou tabmbém é possível utilizar do predicado <strong>LIKE</strong>, onde serão exibidos apenas os resultados semelhantes a restrição feita. Por exemplo:</p>
+                <pre>
+        <strong>SELECT</strong> Nome, Idade, CPF
+        <strong>FROM</strong> Esc.Alunos
+        <strong>WHERE</strong> Nome <strong>LIKE</strong> 'Marcos'
+                </pre>
+                <p> Dessa forma, todos os alunos que tiverem <strong>Marcos</strong> em seu nome, serão exibidos.</p>
+                <p> Além disso, estão presentes também os operadores numéricos e lógicos para esses predicados, sendo eles:</p>
+                <ol>
+                    <li>() ----- Parênteses</li>
+                    <br>
+                    <li>*, /, % ----- Multiplicação, Divisão e Módulo</li>
+                    <br>
+                    <li>+ e - ----- Soma/Positivo/Concatenação e Subtração/Negativo</li>
+                    <br>
+                    <li>=, >, <, <>, != ----- Operadores de comparação</li>
+                    <br>
+                    <li>NOT</li>
+                    <br>
+                    <li>AND</li>
+                    <br>
+                    <li>BETWEEN, IN, LIKE, OR</li>
+                    <br>
+                    <li>= ----- Atribuição</li>
+                </ol>
+            <hr>
+            <li><strong>Expressão CASE</strong></li>
+                <p> O <i>CASE</i> funciona como uma condicional para os resultados, obtendo um novo valor caso o valor exigido seja respeitado. Como o exemplo seguinte:</p>
+                <pre>
+        <strong>SELECT</strong> Nome, Idade, CPF
+        <strong>FROM</strong> Esc.Alunos
+        <strong>CASE</strong> 
+            <strong>WHEN</strong> Idade > 18 <strong>THEN</strong> 'De Maior',
+            <strong>ELSE</strong> 'De Menor'
+                </pre>
+            <hr>
+            <li><strong>A função SUBSTRING</strong></li>
+                <p> A função <i>SUBSTRING</i> é utilizada, como o nome já indica, em valores de <strong>strings</strong>, de forma a exibir somente parte de um texto, de acordo com o início e fim que o usuário desejar, exibindo então, somente parte da string. Para isso, deve ser passado a <strong>Coluna/String</strong>, o <strong>Início da sequência</strong> e o <strong>fim</strong>. Como o exemplo seguinte:</p>
+                <pre>
+        <strong>SUBSTRING</strong>(Texto,30,17)
+                </pre>
+                <p> Onde a partir do caracter na posição 30, só será exibido a string até mais 17 posições da coluna Texto.</p>
+                <p> Ou, caso seja mais específico, é possível também, indicar um parâmetro como início, dado pelo comando</p>
+                <pre>
+        <strong>SUBSTRING</strong>(Texto,<strong>CHARINDEX</strong>('hostname',texto)+9,7)
+                </pre>
+                <p> Onde a partir da coluna texto, serão exibidos as strings a partir da palavbra <strong>hostname</strong></p>
+            <hr>
+            <li><strong>As funções LEFT e RIGHT</strong></li>
+                <p> Possuindo o mesmo conceito de <i>SUBSTRING</i>, é usado para exibir parte de uma string, com a diferença que após ser passado um parâmetro, apenas a parte direita/esquerda da string será exibida. Como o exemplo:</p>
+                <pre>
+        <strong>SELECT RIGHT</strong>('abcde',3)
+                </pre>
+                <p> Onde será exibido os caracteres <strong>cde</strong> de toda a string.</p>
+            <hr>
+            <li><strong>As funções LEN e DATALENGHT</strong></li>
+                <p> A função <i>LEN</i> retorna o número de caracteres da sequência de entrada. Observe que tal função retorna o número de caracteres e não o número de bytes. É aí onde entra a função <strong>DATALENGHT</strong>, sendo:</p>
+                <pre>
+        <strong>SELECT</strong>
+            <strong>LEN</strong>('abcde'),
+            <strong>DATALENGHT</strong>('abcde')
+                </pre>
+            <hr>
+            <li><strong>A função REPLACE</strong></li>
+                <p> A função <i>REPLACE</i> substitui uma string por outra desejada, reconstruindo assim uma string. Para isso deve ser passado o <strong>valor/coluna</strong> seguido pelo <strong>O que será mudado</strong> e a <strong>mudança</strong>. Como no exemplo seguinte onde onde a <strong>barra será trocada por 2 pontos</strong>:</p>
+                <pre>
+        <strong>SELECT REPLACE</strong>('1-A 2-B','-',':')
+                </pre>
+                <p>Gerando o resultado <strong>1:A 2:B</strong></p>
+            <hr>
+            <li><strong>A função REPLICATE</strong></li>
+                <p> É dado o comando para a replicação de uma sequência de caracteres por uma quantidade de vezes desejada. Dado pelo comando:</p>
+                <pre>
+        <strong>SELECT REPLICATE</strong>('ABC',3)
+                </pre>
+                <p> Gerando um resultado parecido como <strong>ABCABCABC</strong></p>
+            <hr>
+            <li>A função  STUFF</li>
+                <p> Este comando permite  remover um valor de subsequência e inserir outro. Imagine a palavra <strong>Marcos</strong>, com o comando <i>STUFF</i> na letra <strong>A</strong>, a letra pode ser substituído por um outro valor, como <strong>4</strong>, gerando o resultado <strong>M4rcos</strong>.</p>
+                <pre>
+        <strong>SELECT STUFF</strong>('Marcos',2,1,'4')
+                </pre>
+            <hr>
+            <li>Coringas</li>
+                <p> Os coringas, são usados no predicado <strong>LIKE</strong>, filtrando mais ainda os resultados exibidos.</p>
+                <ul>
+                    <li><strong>%</strong></li>
+                        <p>Este coringa permite exibir resultados quaisquer que sejam a partir de um parâmetro. Imagine o comando dado com o parâmetro <strong>M%</strong>, dessa forma, todos os valores que comecem com a letra <strong>M</strong> serão exibidos, independendo do que venha a seguir e quantos caracteres possua.</p>
+                        <pre>
+                <strong>SELECT</strong> Nome
+                <strong>FROM</strong> Esc.Alunos
+                <strong>WHERE</strong> Nome <strong>LIKE</strong> 'M%'
+                        </pre>
+                    <li><strong>_</strong></li>
+                        <p> Tal coringa exibe apenas resultados em que apenas um caracter seja presente a partir do parâmetro. Como o exemplo a cima, com a letra <strong>M</strong>, se este coringa for passado como <strong>M_</strong>, somente valores que comecem com a letra <strong>M</strong> e que tenham apenas um caracter após a letra (independente de qual seja) será exibido.</p>
+                        <pre>
+                <strong>SELECT</strong> Nome
+                <strong>FROM</strong> Esc.Alunos
+                <strong>WHERE</strong> Nome <strong>LIKE</strong> 'M_'
+                        </pre>
+                    <li><strong>[]</strong></li>
+                        <p> Este coringa permite a criação de um conjunto, sendo exibido os valores que estejam dentro deste conjunto. Como por exemplo a exibição dos valores que comecem com as letras <strong>A, B ou C</strong>.</p>
+                        <pre>
+                <strong>SELECT</strong> Nome
+                <strong>FROM</strong> Esc.Alunos
+                <strong>WHERE</strong> Nome <strong>LIKE</strong> '[abc]%'
+                        </pre>
+                        <p><strong>OBS: Este coringa possui uma segunda função, onde um range pode ser criado, a partir do uso de '-', como por exemplo: [A-E], gerando resultados que comecem com as letras A,B,C,D ou E.</strong></p>
+                </ul>
+            <hr>
+            <li>Trabalhando com datas e horas</li>
+                <p> o SQL Server permite trabalhar com esses valores de inúmeras formas, porém, os mais usados são pelos comandos <strong>DATE, TIME e DATETIME</strong>, de forma a exibirem a data, a hora e os dois juntos. Porém, a linguagem T-SQL está em inglês, portanto os valores de data serão exibidos como <strong>aaaa-mm-dd</strong></p>
+                <p> Para contornar essa linguagem, é usado o comando <strong>CONVERT</strong> para converter a linguagem para o português, de forma a ser dado como <strong>dd-mm-aaaa</strong> e horário como <strong>hh:mm:ss</strong>.</p>
+                <pre>
+        <strong>CONVERT</strong>(<strong>CHAR</strong>(10), <i>Column</i>, 103) <strong>AS</strong> Dia  
+        <strong>CONVERT</strong>(<strong>CHAR</strong>(12), <i>Column</i>, 108) <strong>AS</strong> Horário
+                </pre>
+                <p>É possível reduzir o registro de várias maneiras, como apenas as horas ou apenas o dia, ou até mesmo apenas o dia junto as horas. Para isso, é necessário um comando apropriado, sendo eles:</p>
+                <ol>
+                    <li><strong>Day</strong>(<i>Column</i>)</li>
+                    <br>
+                    <li><strong>Month</strong>(<i>Column</i>)</li>
+                    <br>
+                    <li><strong>Year</strong>(<i>Column</i>)</li>
+                    <br>
+                    <li><strong>DATEPARTH</strong>(HH,<i>Column</i>)</li>
+                    <br>
+                    <li><strong>DATEPARTH</strong>(Mi,<i>Column</i>)</li>
+                </ol>
+                <p><strong>OBS: É possível também, obter os valores de data e hora atuais do sistema, através do comando <i>GETDATE()</i></strong></p>
+            <hr>
+            <li><strong>As funções CAST e CONVERT</strong></li>
+                <p> São funções dadas para converter o tipo de um registro, como por exemplo converter um valor <i>INT</i> para <i>VARCHAR</i>. Essas conversões são feits para que os dados possam ser trabalhados juntos em outra coluna ou tabela. Afinal, um dado numérico não pode ser trabalhado junto a uma string. Como nos exemplos acima, onde as datas de tipo <i>DATE</i> foram convertidas para o tipo de exibição visual, para <i>CHAR</i>.</p>
+                <pre>
+        <strong>CONVERT</strong>(<strong>CHAR</strong>(10), <i>Column</i>, 103) <strong>AS</strong> Dia  
+                </pre>
+            <hr>
+            <li><strong>A função DATENAME</strong></li>
+                <p>Esta, exige que o SQL Server informe o nome da data selecionada (Obviamente, será viável utilizar tal função apenas na exibição dos meses), sendo dado o comando:</p>
+                <pre>
+        <strong>SELECT DATENAME</strong>(month,'200090212')
+                </pre>
+                <p><strong>OBS: Lembre-se que os dados são sempre em inglês por padrão.</strong></p>
+            <hr>
+            <p> Também é possível obter informações sobre o sistema do SQL Server, como metadados sobre as tabelas por exemplo. Essas, sã chamadas de <strong>Views e Stored Procedures</strong>. Porém, existem inúmeras funções assim, portando, recomenda-se pesquisar sobre elas na própria internet. Como por exemplo a <strong>sys.tables</strong></p>
+            
+
+        </ul>
+    </body>
+</html>
