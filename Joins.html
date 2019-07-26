@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Joins</title>
+        <meta name="description" content="Este é um site referênte à estudos sobre joins no SQL Server">
+    </head>
+    <body>
+        <h1>Joins - SQL Server</h1>
+        <p> O Microsoft SQL Server dá suporte a 4 operadores de relações entre tabelas: <strong><i>JOIN, APLLY, PIVOT e UNPIVOT</i></strong>, sendo o <strong><i>JOIN</i></strong> padrão da linguagem SQL e os demais sendo extensões da linguaem T-SQL. Cada operador de tabela age em tabelas fornecidas para ele como entrada, aplicando um conjunto de fases de processamento lógico de consula, retornando um resultado de tabela.</p>
+        <p> Um operador de tabela <strong><i>JOIN</i></strong> opera em 2 ou mais tabelas de entrada, possuindo três fundamentos de junção, sendo eles <strong><i>CROSS, INNER e OUTER</i></strong>, se diferenciando por como ocorre sua aplicação lógica de consulta, sendo que cada uma aplica um conjunto de fases diferentes. Em resumo, um <i>CROSS JOIN</i> ou junção cruzada, aplca somente uma fase, <strong> o produto cartesiano</strong>. Um <i>INNER JOIN</i>, ou junção interna, aplica 2 fases o <strong>produto cartesiano</strong> e <strong>um filtro</strong>. Já as operações de <i>OUTER JOIN</i> aplicam 3 fases, sendo o <strong>produto cartesiano</strong>, um <strong>filtro</strong> e <strong>adiciona linhas externas</strong>.</p>
+        <ul>
+            <li><strong>CROSS JOIN</strong></li>
+                <p>Logicamente, o <i>CROSS JOIN</i> é o tipo mais simples de junção entre tabelas, por implementar somente uma fase de processamento lógico em sua consulta - um <strong>produto cartesiano</strong>. Essa fase atua sobre as tabela fornecedas como entradas para a junção e produz um produto cartesiano nas duas. Isto é, será feita junção de todas as linhas em ambas tas tabelas, de forma a exiber seus registros em uma única tabela. Assim, se tiver uma tabela com X linhas e outra ytabela com Y linhas, com a aplicação de um <i>CROSS JOIN</i> será obtido uma única tabela com X. linhasY</p>
+                <p>A realização de uum <i>CROOS JOIN</i> se dá pela sintaxe <strong>SQL-92 ANSI</strong>, sendo a seguinte:</p>
+                <pre>
+            <strong>SELECT</strong> <i>[Prefixo1].Column</i>, <i>[Prefixo2].Column</i>
+            <strong>FROM</strong> <i>Table1</i> <strong>AS</strong> <i>Prefixo1</i>
+            <strong>CROSS JOIN</strong> <i>Table2</i> <strong>AS</strong> <i>Prefixo2</i>
+                </pre>
+                <p> Perceba que cada tabela possui um prefxo com alias, este prefixo servirá como <strong>identificador</strong> visual e usual para o <i>CROSS JOIN</i>, sendo necessário atribuir diferetes prefixos em cada tabela e utilizados na chamada da coluna da tabela. Como o exemplo seguinte:</p>
+                <pre>
+            <strong>SELECT</strong> <i>A.Nome_Aluno</i>, <i>B.Nome_Professor</i>
+            <strong>FROM</strong> <i>Alunos</i> <strong>AS</strong> <i>A</i>
+            <strong>CROSS JOIN</strong> <i>Professores</i> <strong>AS</strong> <i>B</i>
+                </pre>
+                <p> Dessa forma, será exibida uma tabela contendo 2 colunas, com os registros de nomes dos professores e seus alunos.</p>
+            <hr>
+            <li><strong>INNER JOIN</strong></li>
+                <p> Um <i>INNER JOIN</i> aplica  duas fases de processamento lógico em sua consulta - aplicand o <strong>produto cartesiano</strong> de entrada nas tabelas e um <strong>filtro</strong> nas linhas que serão consultadas, através de um predicado exigido pelo usuário.</p>
+                <p>A realização de uum <i>INNER JOIN</i> se dá pela sintaxe <strong>SQL-92 ANSI</strong>, sendo a seguinte:</p>
+                <pre>
+            <strong>SELECT</strong> <i>[Prefixo1].Column</i>, <i>[Prefixo2].Column</i>
+            <strong>FROM</strong> <i>Table1</i> <strong>AS</strong> <i>Prefixo1</i>
+            <strong>JOIN</strong> <i>Table2</i> <strong>AS</strong> <i>Prefixo2</i>
+            <strong>ON</strong> <i>[Prefixo1].Column</i> <i>relação</i> <i>[Prefixo2].Column</i>
+                </pre>
+                <p> Basicamente, o uso da função <strong>ON</strong> funciona exatamebte como um <i>WHERE</i>. Perceba também que não é preciso informar o <strong>INNER</strong> em sua execução, pois basicamente todo <i>JOIN</i> é um <i>INNER JOIN</i>. Segue um exemplo de execução do <i>INNER JOIN</i>:</p>
+                <pre>
+            <strong>SELECT</strong> <i>A.ID_Funcionario</i>, <i>A.Nome_Funcionario</i>, <i>B.Salario</i>
+            <strong>FROM</strong> <i>Funcionarios</i> <strong>AS</strong> <i>A</i>
+            <strong>JOIN</strong> <i>Salarios</i> <strong>AS</strong> <i>B</i>
+            <strong>ON</strong> <i>A.ID_Funcionario</i> = <i>B.ID_FuncionarioSalario</i>
+                </pre>
+                <p> Dessa forma, será exibida uma tabela com os registros de ID, Nome e Salario de cada funcionário, sendo que foi feito um filtro de ID's, exibindo os registros epenas em que as ID's são iguais. Ou seja, apenas os registros em que o filtro julgar como <strong>TRUE</strong> serão retornados.</p>
+            <hr>
+            <li><strong>OUTER JOIN</strong></li>
+                <p> Normalmente são considerados os mais difíceis de compreender entre os demais. Pois ao contrários dos outros, ele possui as 2 fases (<strong>produto cartesiano e filtro</strong>) e possui variações em seu nome. Essas variaçõe são em sua chamada de execução, podendo ser um <strong><i>LEFT, RIGHT ou FULL OUTER JOIN</i></strong>, onde a condição <i>LEFT</i> siginifica que as linhas da tabela esquerda serão preservadas, o <i>RIGHT</i> presevas as linhas da tabela direita e  o <i>FULL</i> onde as linhas de ambas serão preservadas.</p>
+                <p>O que siginica? Basicamente, será a <strong>exibição de linhas com valores nulos</strong>, onde com o <i>LEFT</i> todas as linhas da tabela esquerda serão exibidas em conjunto da direita e se houver alguma linha da coluna esquerda que não esteja ligada a da direita, será exibido o registro da esquerda um um valor <i>NULL</i> para a da esquerda. O conceito segue exatamente o mesmo para as demais condições. Por exemplo:</p>
+                <pre>
+            <strong>Column1</strong>    |    <strong>Column2</strong>
+            ------------------
+              <i>Dado1</i>    |     <i>Dado2</i>
+              <i>Dado1</i>    |     <i>Dado2</i>
+              <i>Dado1</i>    |     <i>Dado2</i>
+              <i>Dado1</i>    |     <i>Dado2</i>
+              <i>Dado1</i>    |     <i>NULL</i>  
+              <i>Dado1</i>    |     <i>Dado2</i>
+              <i>Dado1</i>    |     <i>Dado2</i>
+              <i>Dado1</i>    |     <i>Dado2</i>
+              <i>Dado1</i>    |     <i>Dado2</i>              
+                </pre>
+        </ul>
+    </body>
+
+</html>
