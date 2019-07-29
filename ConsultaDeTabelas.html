@@ -303,7 +303,12 @@
                 <p><strong>OBS: Lembre-se que os dados são sempre em inglês por padrão.</strong></p>
             <hr>
             <p> Também é possível obter informações sobre o sistema do SQL Server, como metadados sobre as tabelas por exemplo. Essas, sã chamadas de <strong>Views e Stored Procedures</strong>. Porém, existem inúmeras funções assim, portando, recomenda-se pesquisar sobre elas na própria internet. Como por exemplo a <strong>sys.tables</strong></p>
-            
+            <hr>
+            <li><strong>Informações de uma tabela</strong></li>
+                <p>Através de uma procedure, é possível consultar todas as <strong>informações presentes em uma tabela</strong> (a não ser os dados contidos nela), como o nome de suas colunas, sua data de criação e etc. Sendo dado o comando seguinte:</p>
+                <pre>
+        <strong>sp_help</strong> '<i>Table</i>'  
+                </pre>
 
         </ul>
     </body>
