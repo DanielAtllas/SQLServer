@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Subconsultas SQL Server</title>
+        <meta name="description" content="Este é um site referênte à estudos de subconsultas no SQL Server">
+    </head>
+    <body>
+        <h1> Subconsultas - SQL Server</h1>
+        <p> A linguagem SQL permite que seu usuário escreva querys internas em uma outra query externa, de forma a ser considerada como um filtro no momento da consulta dos dados, dessa forma a query interna projeta um resultado utilizado para que a consulta externa consulte. Este fenômeno é chamado de <strong>subquery</strong>.</p>
+        <p> Uma subquery pode ser <strong>independente ou correlata</strong>, sendo que a independente em nada depende da consulta externa pertecente, enquanto a outra é dependente. Além disso, uma subqquery pode retornar um único valor ou vários, ou seja, uma subquery pode retornar um resultado de valor único <strong>(Escalar)</strong> ou não.</p>
+        <ul>
+            <li><strong>Subquery Independente</strong></li>
+                <p>São as subquerys que independem da consulta externa à qual pertence, sendo conveniêntes ára depuração, ou seja, é possível destaca-la da Query principal e executa-la, pois mesmo assim será assegurado que ela fará o que foi proposto.</p>
+                <ol>
+                    <li><strong>Subquery Independente (Escalar)</strong></li>
+                        <p> Por ser <strong>Escalar</strong>, é uma subquery que retorna apenas uma valor após sua execução, independente de ser autônoma, sendo possível aparecer em qualquer lugar da Query principal (WHERE, SELECT e etc).</p>
+                        <p>Suponhamos que é preciso consultar uma tabela <atrong>Alunos</atrong> em um BD e que retorne informações sobre o Nome e a nota mais alta de um entre todos os alunos. Para isso, uma subquery Escalar Independente pode ser usada, por retornar apenas um valor (Aluno com a nota mais alta), sendo realizado da seguinte forma:</p>
+                        <p><strong>OBS: Lembre-se, que para uma subquery escalar se torne válida, ela deve retornar somente e apenas um valor como resultado, caso ela retorne mais de um resultado, a mesma poderá falhar em tempo de execução.</strong></p>
+                        <p><strong>OBS: Essa solução pode ser realizada de outras formas, como o uso de uma variável armazenadora por exemplo. Porém, o uso de uma Subquery torna a consulta mais veloz em termos de processamento.</strong></p>
+                        <pre>
+                <strong>SELECT</strong> <i>ID_Aluno, Nome, Nota</i>
+                <strong>FROM</strong> <i>Esc.Alunos</i>
+                <strong>WHERE</strong> <i>Nota</i>=(<strong>SELECT MAX</strong>(A.Nota) <strong>FROM</strong> <i>Esc.Alunos</i> <strong>AS</strong> A)
+                        </pre>
+                        <p>Perceba o uso do operador de <strong>igualdade</strong> na operação da subquery, pois o mesmo é usado para a identificação de subquerys escalar, retornando apenas um valor.</p>
+                        <p>Se uma subquery escalar não retornar nenhum valor, ela será convertida em NULL.</p>
+                    <li><strong>Subquery Independente (Vários Valores)</strong></li>
+                        <p>Por ser <strong>Vários Valores</strong>, a consulta pode retornar, após sua execução, inúmeros resultados como uma coluna única, independente da subquery ser autônoma. Neste caso, por ser diferente da subquery escalar, não é usado o sinal de igualdade, mas sim o predicado <strong>IN</strong>, onde será avaliado como <i>TRUE</i> se a expressão escalarfor igual a qualquer um dos valores da subquery.</p>
+                        <p>Suponhamos que um exemplo em que se deseja exibir a ID dos pedidos de uma loja que tenham sido tratados por funcionários com um nome com a inicial M. Por essa ser uma execução de retorno de mais de um valor, é usado então a subquery com vários valores, com a seguinte execução:</p>
+                        <p><strong>OBS: Essa solução pode ser realizada de outras formas, como o uso de uma variável armazenadora por exemplo. Porém, o uso de uma Subquery torna a consulta mais veloz em termos de processamento.</strong></p>
+                        <pre>
+                <strong>SELECT</strong> <i>ID_Pedido</i>
+                <strong>FROM</strong> <i>Loj.Pedidos</i>
+                <strong>WHERE</strong> <i>ID_Funcionario</i> <strong>IN</strong> (<strong>SELECT</strong> <i>A.ID_Funcionario</i> 
+                                         <strong>FROM</strong> <i>Loj.Funcionarios</i> <strong>AS</strong> A 
+                                         <strong>WHERE</strong> <i>ID_Funcionario</i> <strong>LIKE</strong> 'M%')
+                        </pre>
+                        <p>Além disso, é para conhecimento saber, que o predicado <strong>IN</strong> não é exclusivo de uma subquery de vários valores, assim como uma Query externa pode possuir várias subquerys. Dessa forma, segue-se um exemplo com o que foi dito:</p>
+                        <pre>
+                <strong>SELECT</strong> <i>Column</i>
+                <strong>FROM</strong> <i>Table</i>
+                <strong>WHERE</strong> <i>Column</i>
+                    <strong>BETWEEN</strong> (<strong>SELECT</strong> <i>Column</i> <strong>FROM</strong> <i>Table</i> <strong>AS</strong> <i>A</i>)
+                    <strong>AND</strong> (<strong>SELECT</strong> <i>Column</i> <strong>FROM</strong> <i>Table</i> <strong>AS</strong> <i>B</i>)
+                    <strong>AND</strong> <i>Column</i> <strong>NOT IN</strong> (<strong>SELECT</strong> <i>Column</i> <strong>FROM</strong> <i>Table</i> <strong>AS</strong> <i>C</i>)
+                        </pre>
+                </ol>
+            <hr>
+            <li><strong>Subquery Correlatas</strong></li>
+                <p>Estas são subquerys que fazem <strong>consultas referêntes a atributos da Query externa</strong>, isso significa que a subquery depende diretamente da Query externa e não pode ser usada de forma independente, como no exemplo seguinte, o qual retorna os pedidos com a ID do pedido mais alto de cada cliente:</p>
+                <pre>
+            <strong>SELECT</strong> cust_ID, ID_Pedido, Data_Pedido, ID_Funcionario
+            <strong>FROM</strong> Loj.Pedidos <strong>AS</strong> O1
+            <strong>WHERE</strong> ID_Pedido=(<strong>SELECT MAX</strong>(O2.ID_Pedido) 
+                             <strong>FROM</strong> Loj.Pedidos <strong>AS</strong> O2 
+                             <strong>WHERE</strong> O2.cust_ID = O1.cust_ID)
+                </pre>
+                <p>Perceba que uma das colunas da Query externa doi solicitada na operação da subquery, a coluna <strong>cust_ID</strong> neste caso. As subquerys correlatas normalmente são de difícil interpretação em relação as independentes.</p>
+        </ul>
+    </body>
+
+</html>
