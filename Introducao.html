@@ -24,6 +24,60 @@
                     <li><strong> SQL Server </strong></li>
                         <p> Nada mais é do que a integração do SQL Server em um sistema gerenciador de dados, sendo então utilizado pelo SSMS, neste caso.</p>
                 </ol>
+                <p>Aconselha-se utilizar da versão mais recente do SQL Server, pelo óbvio fato de apresentar novas funcionalidades e correção de erros antigos do sistema, além do fornecimento de um suporte atualizado.</p>
+                <ul>
+                    <li><strong>Instalação (Windows)</strong></li>
+                        <p>Primeiramente, deve ser analisado se a ver~sao atual do Windows em sua máquina é compativel com a versão do SQL Server desejada. No SQL Server 2017 por exemplo, é necessária a disponibilidade de 10Gb de espaço em disco, 4Gb de memória e processadores de x64.</p>
+                        <ul>
+                            <li><strong>Passo I</strong></li>
+                                <p>Será preciso realizar o download da mídia do <strong>SQL Server Developer 2017</strong>, o qual está disponpivel de forma gratuita no site da Microsoft (<a href="https://www.microsoft.com/pt-br/sql-server/sql-server-downloads">www.microsoft.com</a>) e abri-lo em seu sistema operacional;</p>
+                            <li><strong>Passo II</strong></li>
+                                <p>Após a abertira do software,vá na opção <strong><i>Installation</i></strong> e selecione o primeiro ícone com o nome de <strong><i>New SQL Server Stand...</i></strong>, que então será aberta a aba de instalação do SQL Server;</p>
+                            <li><strong>Passo III</strong></li>
+                                <p>Nesta fase, aparecerá uma caixa com as opções de licença, caso seja para uso pessoal, é viável usar da opção <strong><i>Developer</i></strong> e se for uma empresa com intuito de produção, as outras opções serão de mais utilidade. Feito isso, clique em <i>Next</i> e marque a caixa de <strong>aceitação dos termos</strong>, clique em <i>Next</i> e marque a caixa da próxima aba para atualização do SGBD;</p>
+                            <li><strong>Passo IV</strong></li>
+                                <p>Feito os procedimentos acima, será aberta uma aba com as opções de <strong><i>Features</i></strong> as quais entrarão na configuração do SGBD, marque as que forem necessárias para a sua intenção. Caso seja para uso pessoal, basta marcar a opção <strong><i>Database Engine Services</i></strong>, o qual disponibiliza todas as configurações de <i>Client</i> para o usuário;</p>
+                            <li><strong>Passo V</strong></li>
+                                <p>Após a escolha das <i>Features</i> desejadas, será feita as escolhas de configurações gerais para o SGBD e uma delas, é a <strong><i>Collation</i></strong> (A linguagem SQL que será usada), por padrão é melhor deixar a que já está solicitada. Feito isso, a próxima aba será de configurações de segurança do sistema, onde será dito quais os usuários Admin serão inseridos, definição de diretórios de armazenamento de arquivos de Data e Log e etc.</p>
+                                <p>Agora basta dar um <i>Next</i> em tudo e eseperar a instalção do SGBD SQL Server em sua máquina ser concluído;</p>
+                            <li><strong>Passo VI</strong></li>
+                                <p>Este é o último e mais simples dos passos seguidos, o da <strong>Instalação do SSMS</strong>, onde pode ser instalado pelo próprio <strong>SQL Server Developer 2017</strong>, na opção <strong>Install SQL Server Management Tools</strong> e fazer a instalação padrão, como em qualquer outro software.</p>   
+                        </ul>
+                    <li><strong>Instalação (Linux)</strong></li> 
+                        <p>A instalção aqui será apresentada pela distribuição <strong>Ubunto</strong>, porém, o segmento é extremamente semelhante para as demais distribuições. Primeiramente saiba que é exigido ter instalado no mínimo a build 16.04 com 4 GB de memória, embora a documentação oficial não diga o quanto de espaço em disco devemos ter, é indicado ter pelos menos 10 GB livres.</p>
+                        <ul>
+                            <li><strong>Passo I</strong></li>
+                                <p>Após fazer a instalação do Ubuntu, é necessário executar um <strong><i>update</i></strong> para atualizar o SO e atualizar os pacotes, feito através do comando:</p>
+                                <pre>
+                    <strong>Sudo apt-get</strong> update
+                                </pre>
+                                <p><strong>OBS: Para executar este comando você terá que elevar o seu usuário para root.</strong></p>
+                            <li><strong>Passo II</strong></li>
+                                <p> Agora, será preciso fazer a instalação dos pacotes que foram encontrados, através do mesmo comando feito anteriormente. Após a instalação dos novos pacotes é recomendado dar um boot no servidor;</p>
+                            <li><strong>Passo III</strong></li>
+                                <p> Agora é necessário importar a chave GPG para o repositório, dado pelo comando:</p>
+                                <pre>
+                    <strong>curl</strong> https://packages.microsoft.com/keys/microsoft.asc <strong>| sudo apt-key add -</strong>
+                                </pre>
+                                <p>Além de registrar o repositório da Microsoft SQL Server no Ubuntu, pelo comando:</p>
+                                <pre>
+                    <strong>sudo add-apt-repository</strong> "$(curl https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"
+                                </pre>
+                                <p>Feito isso, é preciso dar o comando de update novamente;</p>
+                            <li><strong>Passo IV</strong></li>
+                                <p>O SQL Server está pronto para ser instalado, basta executar o seguinte comando:</p>
+                                <pre>
+                    <strong>sudo apt-get install -y</strong> mssql-server
+                                </pre>
+                                <p>Para concluir a instalação e iniciar as configurações da instância devemos executar o comando:</p>
+                                <pre>
+                    <strong>sudo /opt/mssql/bin/mssql-conf setup</strong>
+                                </pre>
+                            <li><strong>Passo V</strong></li>
+                                <p>Apartir daqui, basta inserir os dados de configuração que serãosolicitados no Shell, como o idioma, a versão do SQL Server e etc;</p>
+                        </ul>
+                        <p><strong>OBS: Caso haja alguma dúvida, vá no site seguinte para ua melhor orientação de instação so SGBD no Windows/Linux = (<a href="https://www.tiagoneves.net/blog/instalando-o-sql-server-2017/">Install SQL Server</a>) </strong></p>
+                </ul>
             <hr>
             <li><strong> Conectando-se a uma instância </strong></li>
                 <p> Após a instalação do SSMS e do SQL Server serem realizadas em sua máquina, é preciso executar o software SSMS para a inicialização. Após isso, o programa será aberto e uma pequena janela será exibida, solicitando registros de <i><strong>Server name</strong></i> e <i><strong>Authentication</strong></i>. Esta janela é a <strong>conexão direta com uma instância</strong>.</p>
