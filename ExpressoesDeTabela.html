@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <title>Expressões de Tabela</title>
+        <meta charset="utf-8">
+        <meta name="description" content="Este é um site de estudos sobre expressões de tabelas no SGBD SQL Server.">
+    </head>
+    <body>
+        <h1>Expressões de Tabelas - SQL Server</h1>
+        <p> São expressões de consultas nomeadas que representam uma tabela relacional válida, as quais podem ser usadas em instruções de manipulação de dados similares a tabelas, além da disponibilização apenas de dados desejados para trceiros. Entre essas expressões de tabelas disponíveis, o SQL Server possui 4, sendo elas <strong>Tabelas derivadas, CTE's, views e Functions</strong>.</p>
+        <p> As expressões de tabelas não estão materializadas fisicamente em lugar algum, pois são virtuais. Uma consulta em uma expressão de tabela é convertida internamente em uma consulta nos objetos subjacentes. De certa forma, as expressões de tabelas ajudam a simplificar as soluções usando uma abordagem modular, além de contornar algumas restrições de linguagem (como referênciar um ALIAS em cláusulas anteriores a SELECT).</p>
+        <ul>
+            <li><strong>CTE's</strong></li>
+                <p>Superficialmente, a diferença entre tabelas derivadas e CTE's pode parecer meramente semântica, porém, o fato de difinir primeiro uma CTE e depois usa-la, a torna muito mais vantajosa em relação as tabelas derivadas, como por exemplo é a possibilidade de fazer referência a outras CTE's, bastando defini-las separadas por virgulas na mesta instrução. Portanto, as tabelas derivadas não serão abordadas nestas aulas.</p>
+                <p>Cada CTE pode fazer referência a todas as CTE's definidas anteriormente e a consulta externa pode fazer referência a todas as CTE's.</p>
+                <p>As CTE's são definidas  com o uso de uma instrução <strong><i>WITH</i></strong> e tem a forma geral seguinte:</p>
+                <pre>
+            <strong>WITH</strong> <i>NomeCTE</i> <strong>AS</strong>(
+                <i>Consulta</i>
+            )
+                </pre>
+                <p> Como no exemplo seguinte de consulta de CTE's:</p>
+                <pre>
+            <strong>WITH</strong> CTE1 <strong>AS</strong>(
+                <strong>SELECT</strong> Matricula, Nome, Idade
+                <strong>FROM</strong> Esc.Alunos
+            )
+            
+            <strong>SELECT</strong> *
+            <strong>FROM</strong> CTE1
+                </pre>
+            <li><strong>Views</strong></li>
+                <p>As views são tipos reutilizaveis de expressões de tabelas, onde suas definições estão armazenadas como um objeto no BD. Uma vez criados, esses objetos se tornam partes permanentes do banco de dados e só são removidos se forem excluídos por instrução.</p>
+                <p>De certa forma, pode-se entender como view, a criação de uma breve apresentaçãos dos dados de uma tabela. Imagine que seja necessário que o DBA apresente as colunas <i>Nome</i> e <i>Operação</i> de uma coluna de funcionários à um terceiro. Obviamente, por o terceiro não ser um DBA e não ter tão permissão, não é nada seguro entregar-lhe toda a tabela contendo além dos colunas solicitadas, outras mais que podem comprometer a segurança da empresa. Para isso, são criadas as views, pois assim, o DBA poderá inserir na view apenas as colunas e os dados que julgar necessários para o terceiro. Como no exemploo seguinte:</p>
+                <pre>
+            <strong>CREATE VIEW</strong> ExibeInformation <strong>AS</strong>
+                <strong>SELECT</strong> Nome, Operação
+                <strong>FROM</strong> Emp.Projeto
+            <strong>GO</strong>
+                </pre>
+                <p>Perceba que na criação da view, além do comando <i><strong>CREATE</strong></i>, também é inserido a cláusula de <i>ALIAS</i>, o <strong><i>AS</i></strong>. Após isso, basta dar um nome para view e a instrução de consulta que deseja inserir nela.</p>
+                <p>Como a view é um objeto do BD, é posssível controlar o acesso a ela através de permissões exatamente como se faz com objetos, podendo então conceder a usuários as permissões <i><strong>SELECT, INSERT, UPDATE e DELETE</strong></i>, além de negar acessos diretos aos objetos subjacentes.</p>
+                <p><strong>OBS: Como nos demais objetos, aconselha-se também o não uso do coringa "*" na consulta das views.</strong></p>
+                <ul>
+                    <li><strong>Opções de uma view</strong></li>
+                        <p>A criação de uma view possui várias brechas, as quais podem afetar drasticamente a segurança do banco, pois mesmo que não dê certas permissões ao terceiro, o mesmo pode consultar os comandos dados na criação da view através de uma Query. Assim como (dependendo das permissões) o terceiro pode tanto inserir, como alterar e excluir dados dessa view.</p>
+                        <p>Analisando tais informações, existem 3 comandos que podem ser acrescentados na criação de uma view, de forma a tornar-la ainda mais segura e bloqueada para tais entativas de obtenção de dados, sendo eles os comandos <strong>ENRYPTION, SCHEMABINDING e CHECK OPTION</strong>.</p>
+                        <ul>
+                            <li><strong>ENCRYPTION</strong></li>
+                                <p>Este comando indica que o SQL Server armazenará internamente o texto com a definição do objeto em um formato ofuscado, tornando-o não visível diretamente para usuários, somente para usuários privilegiados. Ou seja, o <i><strong>ENCRYPTION</strong></i> irá ocultar a query de consulta usada na criação da view para terceiros. Essa consulta pode ser obtida através do comando seguinte:</p>
+                                <pre>
+                            <strong>SELECT OBJECT_DIFINITION(OBJECT_ID('</strong><i>View</i><strong>'))</strong>
+                                OU
+                            <strong>EXEC sp_helptxt '</strong><i>View</i><strong>'</strong>     
+                                </pre>
+                                <p>O qual irá exibir a query de consulta da view criada. Para que essa exibição seja ocultado, o comando de <i>ENCRYPTION</i> é o seguinte:</p>
+                                <pre>
+                            <strong>CREATE VIEW</strong> <i>Nome</i> <strong>WITH ENCRYPTION AS</strong>
+                                OU
+                            <strong>ALTER VIEW</strong> <i>Nome</i> <strong>WITH ENCRYPTION AS</strong>
+                                </pre>
+                                <p>Após isso, se o comando de <i>OBJEC_DEFINITION</i> for dado, não será mais exibido a query de consulta usada.</p>
+                            <li><strong>SCHEMABINDING</strong></li>
+                                <p>Já este comando, torna a view bloqueada para instruções de eliminação ou alteração dos objetos referênciados e as colunas. A inserção deste comando (Assim como os demais) é como o mostrado acima. Usado durante a <strong>criação ou alteração</strong> da view.</p>
+                            <li><strong>CHECK OPTION</strong></li>
+                                <p>A opção <i>CHECK OPTION</i> por outro lado, apenas irá impedir modificações na view que entrem em conflito com o filtro da mesma, ou seja, funcionando como a <i>constraint</i> <strong>CHECK</strong> que de certa forma, valida os dados que serão inseridos em determinada coluna.</p>
+                        </ul>
+                </ul>
+        </ul>
+        
+    </body>
+</html>
