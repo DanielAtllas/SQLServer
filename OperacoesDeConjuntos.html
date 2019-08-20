@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+    <head>
+        <title>Operações de Conjuntos </title>
+        <meta charset="utf-8">
+        <meta name="description" content="Este é um site de estudos sobre os operações de conjuntos em SQL Server.">
+    </head>
+    <body>
+        <h1>Operações de Conjuntos - SQL Server</h1>
+        <p>Operações de conjuntos são operaçõe entre dois ou mais conjuntos de entrada resultantes de consultas (Sendo bem semelhamte a função de <i>JOIN</i>) onde são tidas 2 tabelas (Conjunto A e B) e feita alguma operação entre os dois.</p>
+        <p>A T-SQL dá suporte a 3 operações de conjuntos: <strong><i>UNION, INTERSECT e EXECPT</i></strong>, onde sua foir geral é a seguinte:</p>
+        <pre>
+    <i>Consulta1</i>
+    <strong>Operação de Conjunto</strong>
+    <i>Consulta3</i>
+        </pre>
+        <p>Uma operação de conjuntos compara linhas completas entre os conjuntos de resultados das duas consultas de entrada envolvidas. O que uma linha retornará no resultado, dependo do resultado da comparação e da operação de conjunto realizada. Logo, uma operação de conjuntos não tem uma ordem garantida, portanto não é respeitado a cláusula <strong><i>ORDER BY</i></strong>. Porém, embora as consultas envolvidas não possam ter cláusulas <i>ORDER BY</i>, opcionalmente é possível adiciona-la para que seja aplicada ao resultado da operação de conjuntos total.</p>
+        <p>Em termos de processamento lógico, cada uma das consultas individuais pode ter todas as fases de processamento lógico de consulta, exceto para uma <i>ORDER BY</i> de apresentação (Onde caso seja usada, é aplicada ao resultao da operação de conjuntos).</p>
+        <p>As duas consutas envolvidas em uma operação de conjuntos devem <strong>produzir conjuntos de resultados com o mesmo número de colunas e tipos compatíveis</strong>. Já os nomes das colunas no resultado de uma operação, sãoo determinados pela primeira consulta. Portanto, é possível atribuir <i>ALIAS</i> às colunas resultantes na primeira consulta. Assim como um aspecto interessante das operações de conjuntos é que ao comparar linhas, uma operação de conjuntos considera dois NULLS como iguais.</p>
+        <p>A SQL ANSI dá suporte a dois tipos de operações para cada operação de conjuntos; <strong>DISTINCT</strong> e <strong>ALL</strong>, sendo o tipo <i>DISTINCT</i> logicamente elimina as duplicatas dos dois multisets de entrada, transformando-os em conjuntos, e retorna um conjunto. Já o tipo <i>ALL</i> opera em dois multisets sem eliminar as duplicatas e retorna um multiset que pode ter duplicatas.</p>
+        <ul>
+            <li><strong>A operação de conjuntos UNION</strong></li>
+                <p>Ma teoria dos conjuntos, a <i>união</i> de dois conjuntos (vamos chama-los de A e B) é o conjunto que contém todos os elmentos de A e de B. Em outras palavras, se um elemento pertencer a qualquer um dos conjuntos de entrada, ele pertencerá ao conjunto <strong>dos resultados</strong>, como na imagem a seguir, onde a área marcada com a cor mais escura representa o resultado da operação de conjuntos:</p>
+                <img src="https://www.infoescola.com/wp-content/uploads/2018/08/img_5b6df0fb9b6f1.png" alt="Descrição">
+                <p>Logo, na T-SQL a operação de conjuntos <i>UNION</i> <strong>unifica os conjuntos de resultados de duas consultas de entrada</strong>. Onde se aparecer a uma linha em qualquer um dos conjuntos de entrada. ela aparecerá no resultado da operação <i>UNION</i>.</p>
+                <ol>
+                    <strong><li>A operação de conjuntos UNION ALL</li></strong>
+                        <p>Esta operação, retorna <strong>todas as linhas que aparecem em qualquer um dos multisets</strong> de entrada resultantes das duas consultas de entradas da operação, <strong>sem realmente comparar linhas e sem eliminar as duplicatas</strong>. Ou seja, presumindo que a <i>Consulta1</i> retorne <i>M</i> linhas e que a <i>Consulta2</i> retorne <i>n</i> linhas, um <strong>union all</strong> entre as consultas irá retornar <i>M</i> + <i>N</i> linhas. A qula seria representada como:</p>
+                        <pre>
+                    <strong>SELECT</strong> <i>M</i>
+                    <strong>FROM</strong> <i>Consulta1</i>
+                    <strong>UNION ALL</strong>
+                    <strong>SELECT</strong> <i>N</i>
+                    <strong>FROM</strong> <i>Consulta2</i>
+                        </pre>
+                        <p><strong>OBS: Como o UNION ALL não elimina duplicatas, a mesma linha pode aparecer várias vezes no resultado.</strong></p>
+                    <strong><li>A operação de conjuntos UNION DISTINCT</li></strong>
+                        <p>Esta operação, apesar de transformar os dois multsets de entrada em conjuntos por meio da eliminação de duplicatas, retorna um conjunto com todas as linhas que aparecem em qualquer um dos conjuntos de entrada. Observe que se uma linha aparecer nos dois conjuntos de entrada, la aparecerá somente uma vez no resultado.</p>
+                        <p><strong>OBS: A operação de conjuntos com UNION DISTINCT é ímplicita, ou seja, não será preciso informar o código DISTINCT. Pois o SQL já entende um UNION padrão, com o uso do DISTINCT.</strong></p>
+                </ol>
+            <hr>
+            <li><strong>A operação de conjuntos INTERSECT</strong></li> 
+                <p>Na teoria dos conjuntos, a <i>interseção</i> de dois conjuntos A e B é o conjunto de <strong>todos os elementos que unicamente pertencem a A e também pertecem a B</strong>, como na imagem a seguir:</p>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Set_intersection.png/220px-Set_intersection.png" alt="Descrição">
+                <p>Logo, na T-SQL, esta operação retorna somente linhas que apareçam nas duas entradas. Dados então, pelo comando seguinte:</p>
+                <pre>
+                    <strong>SELECT</strong> <i>M</i>
+                    <strong>FROM</strong> <i>Consulta1</i>
+                    <strong>INTERSECT</strong>
+                    <strong>SELECT</strong> <i>N</i>
+                    <strong>FROM</strong> <i>Consulta2</i>
+                </pre>
+            <hr>
+            <li><strong>A operação de conjuntos EXECPT</strong></li>
+                <p>Na teoria dos conjuntos, a <i>diferença</i> dos conjuntos A e B é o conjunto de elementos que petecem a A e não pertencem a B. Ou seja, A menos os membros de B, incluindo aqueles que também estão em A. Como na figure seguinte:</p>
+                <img src="https://www.infoescola.com/wp-content/uploads/2018/08/img_5b6df8aa92d93.png" alt="Descrição">
+                <p>Logo, na T-SQL, a diferença de dois conjuntos é implementada com a operação de conjuntos <strong>EXCEPT</strong>, o qual opera nos conjuntos de resultados de duas conultas de entrada e retorna linhas que aparecem <strong>somente na primeira entrada</strong> e não na segunda. Dadas pelo comando:</p>
+                <pre>
+                    <strong>SELECT</strong> <i>M</i>
+                    <strong>FROM</strong> <i>Consulta1</i>
+                    <strong>EXCEPT</strong>
+                    <strong>SELECT</strong> <i>N</i>
+                    <strong>FROM</strong> <i>Consulta2</i>
+                </pre>
+            <hr>
+            <li><strong>Prioridade</strong></li>
+                <p> A SQL define a prioridade entre as operações de conjuntos, onde a operação <strong>INTERSECT</strong> tem prioridade sobre as operações <strong>UNION e EXCEPT</strong>, enquanto <strong>UNION e EXCEPT</strong> são consideradas iguais.</p>
+        </ul>
+    </body>
+</html>
