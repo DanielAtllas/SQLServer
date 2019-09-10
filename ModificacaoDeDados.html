@@ -1,0 +1,106 @@
+<html lang="pt-br">
+    <head>
+        <title>Modificação de Dados</title>
+        <meta charset="utf-8">
+        <meta name="description" content="Este é um site de estudos sobre modificação de dados em SQL Server.">
+    </head>
+    <body>
+        <h1>Modificação de Dados (DML) - SQL Server</h1>
+        <p>A linguagem SQL possui um conjunto de instruções conhecidas como <strong>DML</strong> (Data Manipulation Language), q aul funciona para a <strong>modificação e recuperação de dados</strong>, entre suas instruções, estão os comandos <strong><i>SELECT, INSERT, UPDATE e MERGE</i></strong> (sendo o comando <i>SELECT</i>, sem dúvidas, o mais utilizados na maioria das querys).</p>
+        <ul>
+            <li><strong>Inserção de dados</strong></li>
+                <p>A T-SQL fornece vários comandos para inserção de dados em uma tabela, os <i><strong>INSERT VALUES, INSERT SELECT, INSERT EXEC, SELECT INTO e BULK INSERT</strong></i>, onde basicamente, todas possuem a mesma função de inserção, porém com peculiaridades.</p>
+                <ul>
+                    <li><strong>INSERT VALUES</strong></li>
+                        <p>Este comando, é dado para <strong>inserir linhas em uma tabela</strong>, com base nos valores desejados pelo usuário. Este comando, é o seguinte:</p>
+                        <pre>
+                <strong>INSERT INTO</strong> <i>table</i>(<i>columns</i>) <strong>VALUES</strong>(
+                        <i>dados</i>
+                )
+                        </pre>
+                        <p>Perceba que neste comando, é preciso passar como parâmetros, o nome da <strong>tabela</strong> em que os dados serão inseridos e as respectivas <strong>colunas</strong>, sendo dessa forma, os dados inseridos <strong>na ordem em que as colunas se encontram</strong>, ou seja, os dados a serem inseridos no comando, devem seguir a ordem escolhida das colunas, como no exemplo a seguir:</p>
+                        <pre>
+                <strong>INSERT INTO</strong> <i>Alunos</i>(<i>Matricula, Nome, Idade</i>) <strong>VALUES</strong>
+                        (<i>UC18101381, 'Marcos Jr', 20</i>),
+                        (<i>UC18102506, 'Maryanna', 16</i>)
+                        </pre>
+                        <p>Perceba também, que o uso de parênteses é necessário para cada <strong>linha</strong> a ser inserida na tabela. Assim como, o <strong>tipo</strong> de dado de cada coluna, também deve ser respeitado. Imagine que se deja inserir uma palavra em uma coluna do tipo <i>int</i>, nesta ocasião, o SQL Server irá reportar um erro ao usuário pelo tipo de dado a ser inserido e não irá realizar a operação (O mesmo conceito se aplica a colunas que aceitam ou não valores NULL's).</p>
+                        <p>Esse comando, é processado com uma operação atômica, ou seja, se alguma linha da inserção apresentar erro, nenhuma das linhas inseridas na instrução será concluída e armazenada na tabela.</p>
+                    <li><strong>INSERT SELECT</strong></li>
+                        <p>Este comando insere um <strong>um conjunto de linhas obtidas por uma consulta SELECT e as insere em uma tabela</strong>. Em termos gerais, o seu conceito e sintaxe é semelhante ao comando de inserção citado anteriormente, sendo ele:</p>
+                        <pre>
+                <strong>INSER INTO</strong> <i>table</i> (<i>columns</i>)
+                    <strong>SELECT</strong> <i>columns</i>
+                    <strong>FROM</strong> <i>table</i>
+                        </pre>
+                        <p>É recomandado o uso da cláusula <i>WHERE</i> neste contexto, uma vez que este comando irá especificar os dados que deseja inserir. Além disso, este comando segue o mesmo xonceito de operaçã atômica para suas linhas, citado no comando anterior.</p>
+                    <li><strong>INSERT EXEC</strong></li>
+                        <p>Como os demais, este comando segue exatamente o mesmo conceito de inserção de linhas, porém, é usado para inserir na tabela, os dados de uma consulta de uma <strong>procedure</strong>, onde como bom hábito, é recomendado passar alguma restrição, para que os dados a serem inseridos, sejam exatamente aqueles desejados. Este comando é dado por:</p>
+                        <pre>
+                <strong>INSERT INTO</strong> <i>table</i> (<i>columns</i>)
+                    <strong>EXEC</strong> <i>procedure</i>
+                        </pre>
+                    <li><strong>BULK INSERT</strong></li>
+                        <p>Este comando é muito importante e um tanto diferente, uma vez que segue os mesmo padrões dos comandos anteriores, porém como uma peculiridade, onde os dados a serem inseridos na tabela, são os dados de um <strong>arquivo</strong> do computador usado, ou seja, através do <i>BULK INSERT</i>, é possível inserir os dados de um arquivo em uma tabela diretamente. Para isso, é preciso especificar o arquivo de origem, o caminho até o arquivo e as opções. Essas opções, são podem ser várias, como o tipo do arquivo de dados, a terminação de linha e etc. Dados pelo comando a seguir:</p>
+                        <pre>
+                <strong>BULK INSERT</strong> <i>table</i> <strong>FROM</strong> '<i>caminho até o arquivo</i>'
+                    <strong>WITH</strong>(
+                        <i>opções</i>
+                    )
+                        </pre>
+                    <p>Pode ser que não tenha ficado tão claro o seguimento do comando <i>BULK INSERT</i>, portanto, segue um exemplo prático usando tal comando:</p>
+                    <pre>
+                <strong>BULK INSERT</strong> <i>Alunos</i> <strong>FROM</strong> '<i>c:\temp\orders.txt</i>'
+                    <strong>WITH</strong>(
+                        <i>DATAFILETYPE = 'char',
+                        FIELDTERMINATOR = ',',
+                        ROWTERMINATOR = '\n'</i>
+                    )
+                        </pre>
+                </ul>
+            <hr>
+            <li><strong>Excluimento de dados</strong></li>
+                <p>A T-SQL fornece duas instruções para a exclusão de linhas em uma tabela (<strong>DELETE e TRUNCATE</strong>), os quais, de modo geral, seguem um mesmo conceito de retirada de dados/linhas de uma tabela.</p>
+                <ul>
+                    <li><strong>DELETE</strong></li>
+                        <p>Esta é uma instrução padrão usada para excluir dados de uma tabela com base em um <strong>predicado</strong>. Este predicado, funciona como uma ferramenta de segurança, para que dados indesejados não sejam deletados. O comando é o seguinte:</p>
+                        <pre>
+                <strong>DELETE FROM</strong> <i>table</i>
+                <strong>WHERE</strong> <i>predicado</i>
+                        <p>A partir de então, todas linhas que estiverem dentro do predicado, serão deltadas da tabela. Além disso, ao final da execução do comando, o SQL Server apresenta uma mensagem da <strong>quantidade de mensagens que foi deletadas</strong> após a execução.</p>
+                        </pre>
+                    <li><strong>TRUNCATE</strong></li>
+                        <p>A instrução <i>TRUNCATE</i> segue um mesmo conceito de exclusão de dados, porém, ao invés de deletar apenas as linhas que respeitam um predicado, este comando irá <strong>excluir todas as linhas da tabela</strong>, portanto, este comando exige a total atenção do usuário, sendo usado somente com total certeza. É dado pelo comando seguinte:</p>
+                        <pre>
+                <strong>TRUNCATE TABLE</strong> <i>table</i>
+                        </pre>
+                        <p>A principal vantagem do comando <i>TRUNCATE</i> é a sua velocidade de processamento por não ser registrada em log, ou seja, ao uso de um comando <i>TRUNCATE</i> em uma tabela com milhares de linhas, todas elas serão excluídas em poucos segundos. Já com a instrução <i>DELETE</i>, essas linhas podem demorar minutos ou até mesmo horas para serem totalmente excluídas.</p>
+                        <p>Um outro porém a ser analisado, é que a instrução <i>TRUNCATE</i> não é permitida quando a tabela de destino é referênciada por uma <strong>foreign key</strong>, ou seja, se a tabela possuir ligação de chave estrangeira com alguma outra tabela, o comando irá reportar um erro para o usuário, sendo preciso então, primeiramente quebrar essa ligação de chave entre as tabelas.</p>
+                </ul>
+            <hr>
+            <li><strong>Atualização de dados</strong></li>
+                <p>A T-SQL fornece suporte a uma instrução <i>UPDATE</i> que prmite <strong>atualizar linhas em uma tabela</strong>, ou seja, caso o usuário deseje alterar o valor de um dado em uma respectiva tabela, é possível realizar isso pelo comando <i>UPDATE</i>.</p>
+                <ul>
+                    <li><storng>UPDATE</storng></li>
+                        <p>Para essa instrução, novamente é recomendado o uso de um predicado, uma vez que sem ele, todas as linhas da tabela podem ser alteradas por um mesmo valor. Portanto, o uso de um <strong>WHERE</strong> é altamente recomendado. Além disso, o comando é acompanhando de um comando <strong>SET</strong> para definir o dado a ser alterado. Sendo:</p>
+                        <pre>
+                <strong>UPDATE</strong> <i>table</i>
+                    <strong>SET</strong> <i>column</i> = <i>novo dado</i>
+                <strong>WHERE</strong> <i>column</i> = <i>predicado</i>
+                        </pre>
+                        <p>Logo, além de alterar o valor de um dado, também é possível inserir um novo dado na linha, por exemplo, imagine que foi inserida uma nova coluna na tabela, logo, os dados dessa tabela terão valores nulos nessa nova coluna. Para inserir registros nessa nova coluna em cada linha, é usado também o comando <strong>UPDATE</strong>.</p>
+                    <li><strong>UPDATE baseado em uma junção</strong></li>
+                        <p>A instrução é muit semelhante a uma instrução <i>SELECT</i> baseada em uma junção, isto é, as cláusulas <strong>FROM e WHERE são as mesmas</strong>. Além disso, o <i>UPDATE</i> vem seguido de um <strong>alias</strong> da tabela que é o destino da atualização (uma por instrução), acompanhada pela cláusula <strong>SET</strong> com as atribuições da coluna. Como no exemplo a seguir:</p>
+                        <pre>
+                    <strong>UPDATE</strong> <i>alias1</i>
+                        <strong>SET</strong> <i>dado</i>
+                    <strong>FROM</strong> <i>table1 AS alias1</i>
+                    <strong>JOIN</strong> <i>table2 AS alias2</i>
+                        <strong>ON</strong> <i>predicado</i>
+                    <strong>WHERE</strong> <i>predicado</i>    
+                        </pre>
+                        
+                </ul>
+        </ul>
+    </body>
+<html>    
