@@ -22,6 +22,7 @@
                     <strong><li>Suporte à replicação transacional</li></strong>
                         <p>O agente de leitor de log monitora o log transacional de cada banco configurado para replicação transacional e copia as transações marcadas para replicação do log de transações no banco de distribuição.</p>
                 </ol>
+            <hr>
             <li><strong>Características</strong></li>
                 <ul>
                     <li>É implementado como um <strong>arquivo separado ou conjunto de arquivos</strong> no banco. O cache de log é gerenciado separadamente do cache de buffer.</li>
@@ -29,6 +30,7 @@
                     <li>Pode ser implementado em vários arquivos.</li>
                     <li>O mecanismo para reutilizar o espaço dentro dos arquivos de log é rápido e tem efeito mínimo em taxa de transferência de transações.</li>
                 </ul>
+            <hr>
             <li><strong>Trubcamento do log transacional</strong></li>
                 <p>Libera espaço no arquivo de log para ser reutilizado pelo log de transações. É necessário truncar regularmente o log de transações para impedir o preenchimento do espaço alocado, sendo importante o monitoramento do tamanho do log.</p>
                 <p>Esteexcluir <strong>VLF's</strong> (virtual log files) inativos do log de transações lógicas de um banco, liberando espaço no log lógico para reutilização pelo log de transações físicas. <strong>Se um log de transações nunca for truncado, eventualmente, ele preencherá todo o espaço em disco alocado para seus arquivos de log físicos.</strong></p>
@@ -37,9 +39,11 @@
                     <li>No modelo de recuperação simples, depois de um ponto de verificação.</li>
                     <li>No modelo de recuperação completa ou bulk_logged, se o ponto de verificação ocorreu desde o backup anterior, o truncamento ocorrerá depois de um backup de log.</li>
                 </ol>
+            <hr>
             <li><strong>Fatores que causam delay no truncamento de log</strong></li>
                 <p>Quando os registros de log permanecem ativos por muito tempo, o truncamento do log de transações é atrasado e esse log poderá ocupar todo o espaço.</p>
                 <p>Na verdade, o truncamento de log pode ser atrsado por uma variedade de motivos. Logo, descobrir o erro, seria possívelpelo uso do <strong>sys.databases</strong>, pelas colunas <strong>log_reuse_wait</strong> e <strong>log_reuse_wait_desc</strong>, os quais poderão deduzir a possível necessidade na database sobre o log transacional.</p>
+            <hr>
             <li><strong>Operações que podem ser minimamente registradas em log</strong></li>
                 <p>Envolve o registro somente das informações que são necessárias para recuperar a transações sem oferecer suporte à recuperação pontual,como:</p>
                 <ul>
@@ -48,6 +52,24 @@
                     <li>Atualizações parciais em tipos de dados de valor grande com <strong>UPDATE</strong>.</li>
                     <li>Operações <strong>CREATE INDEX</strong> e <strong>ALTER INDEX</strong>.</li>
                 </ul>
-
+            <hr>
+            <li><strong>Arquitetura e gerenciamento do log</strong></li>
+                <p> O log opera de forma lógica, como uma cadeia de caracteres de regisrtos de log, onde cada registro é <strong>identificado por um LSN</strong> (Log Sequencial Number). Cada novo registro é gravado no final lógico do log com LSN maior que o registro anterior (ou seja, armazenados de forma consecutiva em sequência ao serem criados). Além disso, cada registro contém a <strong>ID da transação que pertence.</strong></p>
+                <p>Os registros de log para modificações de dados, registram a <strong>operação lógica executada</strong> ou as <strong>imagens anteriores/posteriores dos dados modificados</strong> (cópia dos dados antes/depois da execução). Onde as etapas para recuperar uma operação, dependem do tipo de registro do log, sendo:</p>
+                <ul>
+                    <li><strong>Log de operação lógica</strong></li>
+                        <ol>
+                            <li> Para avançar a operação lógica, é executada a operação novamente.</li>
+                            <li> Para reverter a operação lógica, é executada a operação inversa.</li>
+                        </ol>
+                    <br>
+                    <li><strong>Log da imagem anterior/posterior</strong></li>
+                        <ol>
+                            <li> Para avançar, é aplicada a imagem posterior.</li>
+                            <li> Para reverter, é aplicada a imagem anterior.</li>
+                        </ol>
+                </ul>
+                <p>Fisicamente, a sequência de registros de log é armazenada com eficiência no conjunto de arquivos físicos que implementam o log de transações (deve haver no mínimo um arquivo de log para cada banco).</p>
+                <p>O mecanismo de Banco de dados do SQL Server divide cada arquivo de log físico internamente em vários VLF's(virtual log files), os quais não possuem tamanho fico e nem uma quantia de log's virtuais exata para um arquivo de log físico. Além disso, o tamanho ou o número de arquivos de log virtuais não pode ser configurado nem definido por administradores.</p>
         </ul>
     </body>
