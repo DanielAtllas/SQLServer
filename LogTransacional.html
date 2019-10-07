@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <title>Log Transacional - SQL Server</title>
+        <meta charset="utf-8">
+        <meta name="description" content="Este é um site de estudos sobre Log transacional em SQL Server.">
+    </head>
+    <body>
+        <h1>Log Transacional - SQL Server</h1>
+            <p>A função de um log transacional é <strong>registrar</strong> todas as <strong>transações e modificações</strong> realizadas por cada transação em um banco, logo, este é um componente crítico do SQGBD, além de ser a ferramenta perfeita em caso de incidentes, uma vez que em caso de falha no sistema, será necessário que o log retorne a um estado consistente do banco.</p>
+        <ul>
+            <li><strong>Operações com suporte pelo log de transações</strong></li>
+                <p>O log transacional dá suporte as seguintes operações:</p>
+                <ol>
+                    <strong><li>Recuperação de transações individuais</li></strong>
+                        <p> Ocorre em casos de emissão de <storng>rollback</storng> ou detecção de erro, como perda de comunicação, os registros de log são usados para <strong>reverter as modificações feitas por uma transação incompleta.</strong></p>
+                    <strong><li>Recuperação de todas as transações incompletas quando o SQL Server é iniciado</li></strong>
+                        <p>Se um servidor falhar, os bancos poderão ser deixados no estado em que algumas modificações não foram gravadas do cache de buffer para os arquivos de dados (gerando modificações incompletas nos arquivos). Portanto , ao iniciar uma intância, o SQL Server executa uma <strong>recuperação</strong> de cada banco de dados, onde toda modificação registrada no log que nãop foi gravada nos arquivos é efetuado um <strong>roll forward</strong> e todas as transações incompletas, serão <strong> revertidas</strong> para assegurar a integridade do banco e preserva-la.</p>
+                    <strong><li>Efetuar roll forward em um banco de dados restaurado/arquivo/página até o ponto de falha</li></strong>
+                        <p>Em casos de perda de hardware ou falha de disco que afeta os arquivos do banco, é possível restaurá-lo até o <strong>ponto de falha.</strong></p>
+                        <p>Ao restaurar cada backup de log, o mecanismo do banco reaplica todas as modificações registradas no log para efetuar  roll forward em todas as transações. Quando o último backup de logo é restaurado, o mecanismo de banco usa as informações de log para reverter todas as transações que estavam completas naquele ponto.</p>
+                    <strong><li>Suporte à replicação transacional</li></strong>
+                        <p>O agente de leitor de log monitora o log transacional de cada banco configurado para replicação transacional e copia as transações marcadas para replicação do log de transações no banco de distribuição.</p>
+                </ol>
+            <li><strong>Características</strong></li>
+                <ul>
+                    <li>É implementado como um <strong>arquivo separado ou conjunto de arquivos</strong> no banco. O cache de log é gerenciado separadamente do cache de buffer.</li>
+                    <li>Não possui registro de lo e páginas restrito ao formato de páginas de dados.</li>
+                    <li>Pode ser implementado em vários arquivos.</li>
+                    <li>O mecanismo para reutilizar o espaço dentro dos arquivos de log é rápido e tem efeito mínimo em taxa de transferência de transações.</li>
+                </ul>
+            <li><strong>Trubcamento do log transacional</strong></li>
+                <p>Libera espaço no arquivo de log para ser reutilizado pelo log de transações. É necessário truncar regularmente o log de transações para impedir o preenchimento do espaço alocado, sendo importante o monitoramento do tamanho do log.</p>
+                <p>Esteexcluir <strong>VLF's</strong> (virtual log files) inativos do log de transações lógicas de um banco, liberando espaço no log lógico para reutilização pelo log de transações físicas. <strong>Se um log de transações nunca for truncado, eventualmente, ele preencherá todo o espaço em disco alocado para seus arquivos de log físicos.</strong></p>
+                <p>Para evitar a falha de esáço, a menos que o truncamento de log seja atrasado por alguma razão, o truncamento ocorrerá automaticamente depois de:</p>
+                <ol>
+                    <li>No modelo de recuperação simples, depois de um ponto de verificação.</li>
+                    <li>No modelo de recuperação completa ou bulk_logged, se o ponto de verificação ocorreu desde o backup anterior, o truncamento ocorrerá depois de um backup de log.</li>
+                </ol>
+            <li><strong>Fatores que causam delay no truncamento de log</strong></li>
+                <p>Quando os registros de log permanecem ativos por muito tempo, o truncamento do log de transações é atrasado e esse log poderá ocupar todo o espaço.</p>
+                <p>Na verdade, o truncamento de log pode ser atrsado por uma variedade de motivos. Logo, descobrir o erro, seria possívelpelo uso do <strong>sys.databases</strong>, pelas colunas <strong>log_reuse_wait</strong> e <strong>log_reuse_wait_desc</strong>, os quais poderão deduzir a possível necessidade na database sobre o log transacional.</p>
+            <li><strong>Operações que podem ser minimamente registradas em log</strong></li>
+                <p>Envolve o registro somente das informações que são necessárias para recuperar a transações sem oferecer suporte à recuperação pontual,como:</p>
+                <ul>
+                    <li>Operações de importação em massa <strong>(bcp, BULK...INSERT e INSERT...SELECT)</strong></li>
+                    <li>Operações <strong>SELECT INTO.</strong></li>
+                    <li>Atualizações parciais em tipos de dados de valor grande com <strong>UPDATE</strong>.</li>
+                    <li>Operações <strong>CREATE INDEX</strong> e <strong>ALTER INDEX</strong>.</li>
+                </ul>
+
+        </ul>
+    </body>
