@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Recover Sem Backup</title>
+        <meta name="description" content="Este é um site referênte à Recover sem backuo relacionados a SQL Server">
+    </head>
+    <body>
+        <h1>Recuperação de dados (tabela) apagados sem backup</h1>
+        <p>Se acidentalmente foi executado um comando <strong>DROP</strong> em um objeto e tem-se um backup full do banco, considerando que nenhuma alteração na tabela foi feita após a exclusão, basta recuperar os dados sobrescrevendo o banco original com o backup. Porém, se este não é o caso, ou por que o <strong>objeto e os dados foram modificados após o drop</strong> no SQL executado ou por <strong>falta de backup do banco</strong>, há um meio de recuperar os dados perdidos.</p>
+        <p>Cada operação, incluindo drop, são registradas no <strong>transaction log</strong>, o qual armazena informações necessárias para reverter a transação e, uma vez que o banco de dados está em modo de recuperação full, suporta uma recuperação point-in-tie de uma operação drop.</p>
+        <p>Quando o objeto é deletado e se o usuário der um comando <i>SELECT</i> no mesmo, uma mensagem de erro será exibida, indicando a não existência. Entretanto, há uma ferramenta auxiliar do SQL Server que <strong>recupera dados apagados, truncados, corrompidos ou danificados</strong>, recuperando objetos e dados perdidos devido a operação drop e restaura BLOBs ou como arquivos online.</p>
+        <p>Esta ferramenta/programa é chamado de <strong>ApexSQL Recover</strong>, bastando seguir os passos seguintes em casos de operações drop sem backup:</p>
+        <ol>
+            <li> Iniciar o ApexSQL Recover</li>
+            <br>
+            <li>Selecione a opção <strong>recover lost data due to a drop operation</strong></li>
+            <br>
+            <li>Em <strong>Select the database to recover</strong>, execute:</li>
+            <br>
+                <ol>
+                    <li>Especifique a <strong>instância</strong> na lista suspensa Server</li>
+                    <br>
+                    <li>Especifique o <strong>método de autenticação</strong> para a instância.</li>
+                    <br>
+                    <li>Especifique o nome da <strong>database</strong> que contêm as tabelas apagadas.</li>
+                </ol>
+            <br>
+            <li>No passo <strong>are additional data sources avaible?</strong>, selecione a opção <strong>no additional transaction logs are avaible</strong></li>
+            <br>
+            <li>No passo <strong>select a recovery action</strong>, selecione a opção <strong>savr recovery script to file</strong> e especifique o caminho onde será gravado o script T-SQL que irá inserir todos os dados perdidos quando executado</li>
+            <br>
+            <li>Clique em <strong>recover</strong></li>
+        </ol>
+    </body>
+</html>    
